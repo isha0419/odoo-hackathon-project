@@ -3,11 +3,10 @@
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import AssetCondition, AssetStatus
+from app.models.enums import AllocationStatus, AssetCondition, AssetStatus, MaintenancePriority, MaintenanceStatus
 
 
 class AssetCreate(BaseModel):
@@ -57,7 +56,32 @@ class AssetOut(BaseModel):
     updated_at: datetime
 
 
+class AllocationHistoryItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    holder_user_id: uuid.UUID | None
+    holder_department_id: uuid.UUID | None
+    allocated_at: datetime
+    expected_return_date: date | None
+    returned_at: datetime | None
+    return_condition_notes: str | None
+    status: AllocationStatus
+
+
+class MaintenanceHistoryItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    issue_description: str
+    priority: MaintenancePriority
+    status: MaintenanceStatus
+    technician_name: str | None
+    created_at: datetime
+    resolved_at: datetime | None
+
+
 class AssetDetail(AssetOut):
-    # These will be populated by the service using SQLAlchemy relationship loading
-    allocations: list[Any] = Field(default_factory=list)
-    maintenance_requests: list[Any] = Field(default_factory=list)
+    # Populated by the service using SQLAlchemy relationship loading
+    allocations: list[AllocationHistoryItem] = Field(default_factory=list)
+    maintenance_requests: list[MaintenanceHistoryItem] = Field(default_factory=list)

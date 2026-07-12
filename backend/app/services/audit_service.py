@@ -39,6 +39,7 @@ def create_cycle(db: Session, data: AuditCycleCreate, actor_id: uuid.UUID) -> Au
         start_date=data.start_date,
         end_date=data.end_date,
         status=AuditCycleStatus.OPEN,
+        created_by=actor_id,
     )
     db.add(cycle)
     db.flush()
@@ -137,6 +138,7 @@ def close_cycle(db: Session, cycle_id: uuid.UUID, actor_id: uuid.UUID) -> AuditC
         raise HTTPException(status_code=422, detail="Audit cycle is already closed")
 
     cycle.status = AuditCycleStatus.CLOSED
+    cycle.closed_at = func.now()
     db.add(cycle)
 
     # Process missing items

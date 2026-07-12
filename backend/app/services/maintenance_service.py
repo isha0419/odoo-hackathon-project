@@ -19,13 +19,8 @@ def raise_request(db: Session, data: MaintenanceCreate, actor_id: uuid.UUID) -> 
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
 
-    from app.deps import check_department_scope
-    from app.models.user import User
-
-    actor = db.get(User, actor_id)
-    if actor:
-        check_department_scope(actor, asset.department_id)
-
+    # No department scoping here: design.md Section 8.1 lets any authenticated
+    # role (Admin/Asset Mgr/Dept Head/Employee) raise a maintenance request.
     req = MaintenanceRequest(
         asset_id=data.asset_id,
         raised_by=actor_id,
@@ -66,12 +61,8 @@ def transition(
 ) -> MaintenanceRequest:
     req = get_detail(db, request_id)
 
-    from app.deps import check_department_scope
-    from app.models.user import User
-
-    actor = db.get(User, actor_id)
-    if actor and req.asset:
-        check_department_scope(actor, req.asset.department_id)
+    # No department scoping here: the router already restricts this endpoint to
+    # Admin/Asset Manager only (Section 8.1 has no "dept" qualifier for transitions).
     old_status = req.status
     new_status = data.to_status
 
