@@ -1,0 +1,21 @@
+# === Core Framework ===
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+pydantic[email]==2.11.7
+pydantic-settings==2.9.1
+
+# === Database ===
+sqlalchemy==2.0.41
+alembic==1.15.2
+psycopg2-binary==2.9.10
+
+# === Auth ===
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.4.0
+bcrypt==4.3.0
+
+# === Dev / Testing ===
+pytest==8.4.1
+pytest-cov==6.2.1
+httpx==0.28.1
+ruff==0.11.13
