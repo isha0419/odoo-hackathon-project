@@ -60,8 +60,8 @@ Land the complete repo scaffold, full DB schema migration, auth guard signatures
 **Tests:** `docker compose build` succeeds. `docker compose up` starts both containers.
 
 **Acceptance Criteria:**
-- [ ] `docker compose up` boots postgres + api without crash
-- [ ] `GET localhost:8000/docs` returns Swagger UI
+- [x] `docker compose up` boots postgres + api without crash
+- [x] `GET localhost:8000/docs` returns Swagger UI
 
 ---
 
@@ -83,8 +83,8 @@ Single unified migration for ALL tables, enums, and constraints from Section 3.
 **Tests:** `alembic upgrade head` clean. `downgrade base` then `upgrade head` again — idempotent.
 
 **Acceptance Criteria:**
-- [ ] All 13 tables, 12 enums, 2 crown jewel constraints, 1 sequence created
-- [ ] Round-trip downgrade→upgrade succeeds
+- [x] All 13 tables, 12 enums, 2 crown jewel constraints, 1 sequence created
+- [x] Round-trip downgrade→upgrade succeeds
 
 ---
 
@@ -99,8 +99,8 @@ Single unified migration for ALL tables, enums, and constraints from Section 3.
 - `models/__init__.py` re-exports all models.
 
 **Acceptance Criteria:**
-- [ ] Every table has a model; all enum classes match Section 3.1
-- [ ] `Base.metadata.tables` lists all 13 tables
+- [x] Every table has a model; all enum classes match Section 3.1
+- [x] `Base.metadata.tables` lists all 13 tables
 
 ---
 
@@ -116,9 +116,9 @@ Single unified migration for ALL tables, enums, and constraints from Section 3.
 - `notifications_service.sync_derived(db)` — **stub body**, frozen signature.
 
 **Acceptance Criteria:**
-- [ ] JWT + bcrypt round-trips work
-- [ ] Guards return correct 401/403
-- [ ] Shared stubs importable by all tracks
+- [x] JWT + bcrypt round-trips work
+- [x] Guards return correct 401/403
+- [x] Shared stubs importable by all tracks
 
 ---
 
@@ -129,22 +129,22 @@ Single unified migration for ALL tables, enums, and constraints from Section 3.
 Router files: `auth.py`, `org.py`, `assets.py`, `allocation.py`, `transfers.py`, `booking.py`, `maintenance.py`, `audit.py`, `reports.py`, `notifications.py`, `dashboard.py`, `activity_logs.py`.
 
 **Acceptance Criteria:**
-- [ ] API boots with all tag groups visible in Swagger, zero endpoints
-- [ ] No import errors in logs
+- [x] API boots with all tag groups visible in Swagger, zero endpoints
+- [x] No import errors in logs
 
 ---
 
 ### Stage 0 — Gate Checklist
 
 Before any feature branch is created:
-- [ ] `docker compose up` boots successfully
-- [ ] `alembic upgrade head` creates full schema
-- [ ] All models importable
-- [ ] `security.py` functions work
-- [ ] `deps.py` guards work
-- [ ] Shared helper stubs importable
-- [ ] Swagger UI shows all router tags
-- [ ] `main` pushed; all tracks branch from this commit
+- [x] `docker compose up` boots successfully
+- [x] `alembic upgrade head` creates full schema
+- [x] All models importable
+- [x] `security.py` functions work
+- [x] `deps.py` guards work
+- [x] Shared helper stubs importable
+- [x] Swagger UI shows all router tags
+- [x] `main` pushed; all tracks branch from this commit
 
 ---
 
@@ -188,11 +188,11 @@ Deliver signup/login/me/forgot-password, JWT issuance, departments CRUD, categor
 - `/auth/me` with valid token returns user profile.
 
 **Acceptance Criteria:**
-- [ ] `POST /api/auth/signup` creates EMPLOYEE only, returns user
-- [ ] `POST /api/auth/login` returns JWT with correct claims
-- [ ] `POST /api/auth/forgot-password` returns 200 (no-op)
-- [ ] `GET /api/auth/me` returns current user profile
-- [ ] Role field in signup body is ignored/rejected
+- [x] `POST /api/auth/signup` creates EMPLOYEE only, returns user
+- [x] `POST /api/auth/login` returns JWT with correct claims
+- [x] `POST /api/auth/forgot-password` returns 200 (no-op)
+- [x] `GET /api/auth/me` returns current user profile
+- [x] Role field in signup body is ignored/rejected
 
 ---
 
@@ -210,8 +210,8 @@ Wire up 4 endpoints from Section 11 (Auth):
 | GET | `/auth/me` | `get_current_user` |
 
 **Acceptance Criteria:**
-- [ ] All 4 endpoints functional, matching Section 11 signatures
-- [ ] Public endpoints work without token; `/me` requires token
+- [x] All 4 endpoints functional, matching Section 11 signatures
+- [x] Public endpoints work without token; `/me` requires token
 
 ---
 
@@ -245,11 +245,11 @@ Wire up 4 endpoints from Section 11 (Auth):
 - Dept Head lists employees → sees only own department.
 
 **Acceptance Criteria:**
-- [ ] Departments: full CRUD with hierarchy (parent_department_id) support
-- [ ] Categories: full CRUD with custom_fields
-- [ ] Employees: list (scoped), patch (admin only, role/dept/status)
-- [ ] Role changes logged via `activity_service.log()`
-- [ ] Auth guards enforced per Section 8.1 matrix
+- [x] Departments: full CRUD with hierarchy (parent_department_id) support
+- [x] Categories: full CRUD with custom_fields
+- [x] Employees: list (scoped), patch (admin only, role/dept/status)
+- [x] Role changes logged via `activity_service.log()`
+- [x] Auth guards enforced per Section 8.1 matrix
 
 ---
 
@@ -272,21 +272,21 @@ Wire up endpoints from Section 11 (Organization setup):
 | PATCH | `/employees/{id}` | admin |
 
 **Acceptance Criteria:**
-- [ ] All 9 endpoints match Section 11 contracts
-- [ ] Correct role guards on each endpoint
+- [x] All 9 endpoints match Section 11 contracts
+- [x] Correct role guards on each endpoint
 
 ---
 
 ### Stage 1 — Gate Checklist
 
-- [ ] Full auth flow: signup → login → use JWT → access /me
-- [ ] EMPLOYEE role enforced on signup
-- [ ] Departments CRUD with hierarchy & status
-- [ ] Categories CRUD with custom_fields
-- [ ] Employee directory with dept-scoped listing for Dept Head
-- [ ] Role promotion/demotion: admin-only via PATCH /employees/{id}
-- [ ] Activity log written on role changes
-- [ ] All guards match Section 8.1 permission matrix
+- [x] Full auth flow: signup → login → use JWT → access /me
+- [x] EMPLOYEE role enforced on signup
+- [x] Departments CRUD with hierarchy & status
+- [x] Categories CRUD with custom_fields
+- [x] Employee directory with dept-scoped listing for Dept Head
+- [x] Role promotion/demotion: admin-only via PATCH /employees/{id}
+- [x] Activity log written on role changes
+- [x] All guards match Section 8.1 permission matrix
 
 ---
 
