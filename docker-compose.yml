@@ -1,11 +1,12 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # AssetFlow — Root Compose File
-# Usage:
-#   docker compose up -d --build     → build + start Postgres + API + Frontend
+# One command builds and starts the whole stack, migrated and seeded:
+#   docker compose up -d --build
+#
 #   docker compose down              → stop (data persisted)
 #   docker compose down -v           → stop + wipe DB (fresh start)
 #   docker compose logs -f api       → tail API logs
-#   docker compose exec api python -m app.seed.seed [--reset]  → load demo data
+#   docker compose exec api python -m app.seed.seed --reset  → force a clean re-seed
 #
 # After: GET http://localhost:8000/docs  → Swagger UI
 #        http://localhost:5173          → Frontend
@@ -50,9 +51,11 @@ services:
     # Mount source for hot-reload during local dev
     volumes:
       - ./backend:/app
-    # Override CMD to enable hot-reload in dev; remove for prod image
+    # Override CMD to enable hot-reload in dev; remove for prod image.
+    # Seeding is idempotent (get_or_create by natural key) so it's safe to run
+    # on every boot - only the first run actually creates data.
     command: >
-      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+      sh -c "alembic upgrade head && python -m app.seed.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   frontend:
     build:
