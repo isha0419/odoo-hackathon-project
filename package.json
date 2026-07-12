@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.24.0",
+    "react-hook-form": "^7.81.0",
+    "react-router-dom": "^7.18.1",
+    "recharts": "^3.9.2"
+  }
+}
