@@ -1,6 +1,6 @@
 # AssetFlow — Team Task Status
 
-> Last updated: 2026-07-12 11:00 IST
+> Last updated: 2026-07-12 15:00 IST
 
 ---
 
@@ -18,18 +18,25 @@
   - [x] Employee directory + admin-only role promotion
   - [x] Seed script (admin user, 4 depts, 5 categories)
   - [x] All gate tests passed
-- [ ] Stage 2A — Asset Registry + Allocation + Transfer
-- [ ] Integration merges & final wiring
+- [ ] Stage 4 — Final demo seed, cross-track integration testing, final merge coordination
 
 ---
 
-## 🅱️ Satya (Backend Track 2)
+## 🅱️ Satya (Backend Track B)
 
-- [X] Stage 2B — Booking + Maintenance + Audit
-  - [x] Booking service + calendar endpoint
-  - [ ] Maintenance service + kanban transitions
-  - [ ] Audit cycle service + discrepancy report
-  - [ ] Reports & Dashboard KPI endpoints
+- [x] Stage 2 — Asset Registry + Allocation + Transfer *(Crown Jewel #1)*
+  - [x] Asset CRUD (register, tag, lifecycle transitions)
+  - [x] Allocation service (assign/return, CJ #1 enforcement — verified exact 409 body + DB constraint)
+  - [x] Transfer request workflow (requested → approved/rejected, atomic re-allocation)
+  - [x] Department-Head scoping on allocate/return/transfer approve/reject — verified under real cross-department conditions
+- [x] Stage 3 — Booking + Maintenance + Audit + Reports + Dashboard *(Crown Jewel #2)*
+  - [x] Booking service + calendar endpoint (overlap 409, half-open ranges, cancel/reschedule, temporal status)
+  - [x] Maintenance service (full state machine incl. reject path, asset status side-effects)
+  - [x] Audit cycle service (create/snapshot/assign/mark/close, MISSING→LOST, DAMAGED discrepancies)
+  - [x] Reports (all 7 endpoints + CSV export for each) & Dashboard KPIs
+  - [x] Notifications (`sync_derived` idempotent) & activity logs
+
+**Merged to `main` (`e11e1a3`) after full verification: all automated tests green, every endpoint smoke-tested end-to-end against a real Postgres instance, both crown jewels confirmed with exact spec-matching 409 bodies.**
 
 ---
 
