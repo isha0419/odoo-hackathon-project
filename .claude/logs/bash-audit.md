@@ -1059,3 +1059,268 @@ fb64575 Add AssetFlow design doc, implementation plan, and team workflow
 
 ---
 
+## 2026-07-12T09:10:47Z — session 14996b37
+```bash
+git add frontend/ .claude/logs/bash-audit.md
+git status --short
+```
+**exit:** ?
+**stdout:**
+```
+M  .claude/logs/bash-audit.md
+A  frontend/.env.example
+M  frontend/eslint.config.js
+M  frontend/package-lock.json
+M  frontend/package.json
+D  frontend/public/vite.svg
+D  frontend/src/App.css
+M  frontend/src/App.jsx
+A  frontend/src/api/activityLogs.js
+A  frontend/src/api/allocations.js
+A  frontend/src/api/assets.js
+A  frontend/src/api/audit.js
+A  frontend/src/api/auth.js
+A  frontend/src/api/bookings.js
+A  frontend/src/api/client.js
+A  frontend/src/api/dashboard.js
+A  frontend/src/api/maintenance.js
+A  frontend/src/api/notifications.js
+A  frontend/src/api/org.js
+A  frontend/src/api/reports.js
+A  frontend/src/api/transfers.js
+D  frontend/src/assets/react.svg
+A  frontend/src/components/Banner.jsx
+A  frontend/src/components/EmptyState.jsx
+A  frontend/src/components/Modal.jsx
+A  frontend/src/components/ProtectedRoute.jsx
+A  frontend/src/components/Sidebar.css
+A  frontend/src/components/Sidebar.jsx
+A  frontend/src/components/Spinner.jsx
+A  frontend/src/components/StatusBadge.css
+A  frontend/src/components/StatusBadge.jsx
+A  frontend/src/components/Tabs.jsx
+A  frontend/src/context/AuthContext.jsx
+M  frontend/src/index.css
+A  frontend/src/layouts/AppLayout.css
+A  frontend/src/layouts/AppLayout.jsx
+M  frontend/src/main.jsx
+A  frontend/src/pages/AllocationTransfer.css
+A  frontend/src/pages/AllocationTransfer.jsx
+A  frontend/src/pages/AssetRegistry.css
+A  frontend/src/pages/AssetRegistry.jsx
+A  frontend/src/pages/Audit.css
+A  frontend/src/pages/Audit.jsx
+A  frontend/src/pages/Dashboard.css
+A  frontend/src/pages/Dashboard.jsx
+A  frontend/src/pages/Login.css
+A  frontend/src/pages/Login.jsx
+A  frontend/src/pages/Maintenance.css
+A  frontend/src/pages/Maintenance.jsx
+A  frontend/src/pages/Notifications.css
+A  frontend/src/pages/Notifications.jsx
+A  frontend/src/pages/OrgSetup.css
+A  frontend/src/pages/OrgSetup.jsx
+A  frontend/src/pages/Reports.css
+A  frontend/src/pages/Reports.jsx
+A  frontend/src/pages/ResourceBooking.css
+A  frontend/src/pages/ResourceBooking.jsx
+A  frontend/src/pages/org/CategoriesTab.jsx
+A  frontend/src/pages/org/DepartmentsTab.jsx
+A  frontend/src/pages/org/EmployeesTab.jsx
+A  frontend/src/styles/global.css
+A  frontend/src/styles/tokens.css
+A  frontend/src/utils/constants.js
+A  frontend/src/utils/format.js
+A  frontend/src/utils/roles.js
+?? backend/.claude/
+```
+
+---
+
+## 2026-07-12T09:11:13Z — session 35b1afa3
+```bash
+cd /home/op/projects/odoo-hackathon-project
+echo "=== tracked .claude files on main ==="
+git ls-tree -r main --name-only | grep -i "\.claude"
+echo "=== .gitignore current content ==="
+cat .gitignore 2>/dev/null
+echo "=== is .claude in gitignore already? ==="
+grep -n "claude" .gitignore 2>/dev/null
+```
+**exit:** ?
+**stdout:**
+```
+=== tracked .claude files on main ===
+.claude/logs/bash-audit.md
+=== .gitignore current content ===
+# ── Design doc (tracked separately) ──
+design.md
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──
+.venv/
+venv/
+env/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Testing ──
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Environment ──
+.env
+.env.local
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Docker ──
+postgres-data/
+
+# ── Node (frontend) ──
+node_modules/
+=== is .claude in gitignore already? ===
+```
+
+---
+
+## 2026-07-12T09:11:43Z — session 14996b37
+```bash
+git commit -m "$(cat <<'EOF'
+Build full AssetFlow frontend against the live API (all 10 mockup screens)
+
+React + Vite + react-router-dom, dark theme matching the Excalidraw mockup.
+Covers auth, dashboard, org setup, asset registry, allocation & transfer
+(crown jewel #1), resource booking (crown jewel #2), maintenance kanban,
+audit, reports (recharts + CSV export), and notifications/activity log.
+
+API client, auth context, role-aware nav/guards, and shared components
+(StatusBadge, Modal, Tabs, Banner) built directly against the routers/
+schemas in backend/app, verified end-to-end against a live backend via a
+headless-Chrome walkthrough (login, all screens, both crown-jewel 409s).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+EOF
+)"
+```
+**exit:** ?
+**stdout:**
+```
+[feature/frontend-rebuild 49550ea] Build full AssetFlow frontend against the live API (all 10 mockup screens)
+ 65 files changed, 6227 insertions(+), 191 deletions(-)
+ create mode 100644 frontend/.env.example
+ delete mode 100644 frontend/public/vite.svg
+ delete mode 100644 frontend/src/App.css
+ create mode 100644 frontend/src/api/activityLogs.js
+ create mode 100644 frontend/src/api/allocations.js
+ create mode 100644 frontend/src/api/assets.js
+ create mode 100644 frontend/src/api/audit.js
+ create mode 100644 frontend/src/api/auth.js
+ create mode 100644 frontend/src/api/bookings.js
+ create mode 100644 frontend/src/api/client.js
+ create mode 100644 frontend/src/api/dashboard.js
+ create mode 100644 frontend/src/api/maintenance.js
+ create mode 100644 frontend/src/api/notifications.js
+ create mode 100644 frontend/src/api/org.js
+ create mode 100644 frontend/src/api/reports.js
+ create mode 100644 frontend/src/api/transfers.js
+ delete mode 100644 frontend/src/assets/react.svg
+ create mode 100644 frontend/src/components/Banner.jsx
+ create mode 100644 frontend/src/components/EmptyState.jsx
+ create mode 100644 frontend/src/components/Modal.jsx
+ create mode 100644 frontend/src/components/ProtectedRoute.jsx
+ create mode 100644 frontend/src/components/Sidebar.css
+ create mode 100644 frontend/src/components/Sidebar.jsx
+ create mode 100644 frontend/src/components/Spinner.jsx
+ create mode 100644 frontend/src/components/StatusBadge.css
+ create mode 100644 frontend/src/components/StatusBadge.jsx
+ create mode 100644 frontend/src/components/Tabs.jsx
+ create mode 100644 frontend/src/context/AuthContext.jsx
+ create mode 100644 frontend/src/layouts/AppLayout.css
+ create mode 100644 frontend/src/layouts/AppLayout.jsx
+ create mode 100644 frontend/src/pages/AllocationTransfer.css
+ create mode 100644 frontend/src/pages/AllocationTransfer.jsx
+ create mode 100644 frontend/src/pages/AssetRegistry.css
+ create mode 100644 frontend/src/pages/AssetRegistry.jsx
+ create mode 100644 frontend/src/pages/Audit.css
+ create mode 100644 frontend/src/pages/Audit.jsx
+ create mode 100644 frontend/src/pages/Dashboard.css
+ create mode 100644 frontend/src/pages/Dashboard.jsx
+ create mode 100644 frontend/src/pages/Login.css
+ create mode 100644 frontend/src/pages/Login.jsx
+ create mode 100644 frontend/src/pages/Maintenance.css
+ create mode 100644 frontend/src/pages/Maintenance.jsx
+ create mode 100644 frontend/src/pages/Notifications.css
+ create mode 100644 frontend/src/pages/Notifications.jsx
+ create mode 100644 frontend/src/pages/OrgSetup.css
+ create mode 100644 frontend/src/pages/OrgSetup.jsx
+ create mode 100644 frontend/src/pages/Reports.css
+ create mode 100644 frontend/src/pages/Reports.jsx
+ create mode 100644 frontend/src/pages/ResourceBooking.css
+ create mode 100644 frontend/src/pages/ResourceBooking.jsx
+ create mode 100644 frontend/src/pages/org/CategoriesTab.jsx
+ create mode 100644 frontend/src/pages/org/DepartmentsTab.jsx
+ create mode 100644 frontend/src/pages/org/EmployeesTab.jsx
+ create mode 100644 frontend/src/styles/global.css
+ create mode 100644 frontend/src/styles/tokens.css
+ create mode 100644 frontend/src/utils/constants.js
+ create mode 100644 frontend/src/utils/format.js
+ create mode 100644 frontend/src/utils/roles.js
+```
+
+---
+
+## 2026-07-12T09:11:51Z — session 14996b37
+```bash
+git status --short
+```
+**exit:** ?
+**stdout:**
+```
+ M .claude/logs/bash-audit.md
+ M .gitignore
+```
+
+---
+
+## 2026-07-12T09:11:58Z — session 14996b37
+```bash
+git diff .gitignore
+```
+**exit:** ?
+**stdout:**
+```
+warning: in the working copy of '.gitignore', CRLF will be replaced by LF the next time Git touches it
+diff --git a/.gitignore b/.gitignore
+index 529d93e..f1aa2e9 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -41,3 +41,7 @@ postgres-data/
+ 
+ # ── Node (frontend) ──
+ node_modules/
++
++# ── Claude Code internal logs (not project content) ──
++.claude/
++**/.claude/
+```
+
+---
+

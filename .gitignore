@@ -41,3 +41,7 @@ postgres-data/
 
 # ── Node (frontend) ──
 node_modules/
+
+# ── Claude Code internal logs (not project content) ──
+.claude/
+**/.claude/
