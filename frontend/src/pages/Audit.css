@@ -1,0 +1,373 @@
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Audit.css */
+
+.audit-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+}
+
+/* Header section styling matching the brown/red card in mockup */
+.audit-header-card {
+  background: #281a18;
+  border: 1.5px solid #63433e;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.audit-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audit-cycle-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.audit-cycle-auditors {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Toolbar row for creating new cycles and status filtering */
+.audit-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.audit-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.audit-table-container {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Checklist table styling */
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+
+.audit-table th {
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: capitalize;
+  border-bottom: 1.5px solid var(--border-subtle);
+  text-align: left;
+}
+
+.audit-table th:last-child {
+  text-align: right;
+  padding-right: 24px;
+}
+
+.audit-table td {
+  padding: 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.audit-table td:last-child {
+  text-align: right;
+  padding-right: 24px;
+}
+
+.audit-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.audit-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.audit-asset-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.audit-asset-tag {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.audit-location {
+  color: var(--text-secondary);
+}
+
+/* Verification Capsule Badges (Clickable Hand-Drawn Sketch Pill Badges) */
+.audit-badge-btn {
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.audit-badge-btn:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.audit-badge-btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+/* Specific badge colors */
+.audit-badge-btn--verified {
+  border: 1.5px solid var(--status-green);
+  color: var(--status-green);
+  background: rgba(53, 196, 124, 0.04);
+}
+.audit-badge-btn--verified:not(:disabled):hover {
+  background: rgba(53, 196, 124, 0.12);
+  box-shadow: 0 0 8px rgba(53, 196, 124, 0.2);
+}
+
+.audit-badge-btn--missing {
+  border: 1.5px solid var(--status-red);
+  color: var(--status-red);
+  background: rgba(229, 72, 77, 0.04);
+}
+.audit-badge-btn--missing:not(:disabled):hover {
+  background: rgba(229, 72, 77, 0.12);
+  box-shadow: 0 0 8px rgba(229, 72, 77, 0.2);
+}
+
+.audit-badge-btn--damaged {
+  border: 1.5px solid var(--status-orange);
+  color: var(--status-orange);
+  background: rgba(240, 166, 60, 0.04);
+}
+.audit-badge-btn--damaged:not(:disabled):hover {
+  background: rgba(240, 166, 60, 0.12);
+  box-shadow: 0 0 8px rgba(240, 166, 60, 0.2);
+}
+
+.audit-badge-btn--pending {
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+}
+.audit-badge-btn--pending:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-strong);
+}
+
+.audit-badge-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Discrepancy banner (matching yellow/gold box in sketch) */
+.audit-discrepancy-banner {
+  background: #2b2314;
+  border: 1.5px solid #6b572d;
+  color: #f2ce79;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.audit-discrepancy-banner:hover {
+  background: #332a18;
+  border-color: #8c723b;
+  transform: translateY(-1px);
+}
+
+.audit-discrepancy-banner-text {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audit-discrepancy-banner-action {
+  font-size: 0.9rem;
+  text-decoration: underline;
+  color: var(--status-orange);
+}
+
+/* Bottom action row */
+.audit-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Modal form layouts */
+.audit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.audit-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .audit-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.audit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audit-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.audit-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.audit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Summary stats in discrepancy modal */
+.discrepancy-modal-summary {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1.5px solid var(--border-subtle);
+  padding-bottom: 1rem;
+}
+
+.discrepancy-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.discrepancy-stat-val {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.discrepancy-stat-val--missing {
+  color: var(--status-red);
+}
+
+.discrepancy-stat-val--damaged {
+  color: var(--status-orange);
+}
+
+.discrepancy-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.discrepancy-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.discrepancy-modal-table th {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.discrepancy-modal-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* General helper layouts */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  border: 1.5px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+}
+
+.text-green {
+  color: var(--status-green) !important;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.audit-cycle-badge {
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+}
+
+.audit-cycle-badge--active {
+  border-color: var(--status-blue);
+  color: var(--status-blue);
+  background: var(--status-blue-bg);
+}
+
+.audit-cycle-badge--closed {
+  border-color: var(--status-green);
+  color: var(--status-green);
+  background: var(--status-green-bg);
+}
+
+/* Subtle help text */
+.audit-instruction-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}

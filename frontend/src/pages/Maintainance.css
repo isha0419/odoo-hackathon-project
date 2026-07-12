@@ -1,0 +1,321 @@
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Maintainance.css */
+
+.maintenance-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.maintenance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.maintenance-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.maintenance-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.maintenance-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Kanban Board Layout */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  flex: 1;
+}
+
+@media (max-width: 1100px) {
+  .kanban-board {
+    display: flex;
+  }
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.kanban-column--dragover {
+  border-color: var(--brand);
+  background: rgba(91, 124, 250, 0.04);
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1.5px solid var(--border-subtle);
+  padding-bottom: 8px;
+}
+
+.kanban-column-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.kanban-column-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.kanban-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 250px;
+}
+
+/* Individual Kanban Card Styling */
+.kanban-card {
+  background: var(--bg-root);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  cursor: grab;
+  user-select: none;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kanban-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+/* Green outline styling for Resolved state matching mockup exactly */
+.kanban-card--resolved {
+  border-color: var(--status-green);
+  background: rgba(53, 196, 124, 0.05);
+}
+
+.kanban-card--resolved .kanban-card-tag {
+  color: var(--status-green);
+}
+
+.kanban-card--resolved .kanban-card-name {
+  color: var(--status-green);
+}
+
+.kanban-card--resolved .kanban-card-details {
+  color: rgba(53, 196, 124, 0.8);
+}
+
+.kanban-card--dragging {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+.kanban-card-tag {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.kanban-card-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.kanban-card-details {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.kanban-card-tech {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kanban-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+}
+
+/* Priority Tags */
+.priority-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.priority-badge--high {
+  border-color: var(--status-red);
+  color: var(--status-red);
+  background: var(--status-red-bg);
+}
+
+.priority-badge--medium {
+  border-color: var(--status-orange);
+  color: var(--status-orange);
+  background: var(--status-orange-bg);
+}
+
+.priority-badge--low {
+  border-color: var(--status-blue);
+  color: var(--status-blue);
+  background: var(--status-blue-bg);
+}
+
+.kanban-card-quick-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.kanban-card-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.kanban-card-btn:hover {
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+/* Rules / Footer banner matching bottom of sketch */
+.maintenance-footer {
+  margin-top: auto;
+  border-top: 1.5px solid var(--border-subtle);
+  padding-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.maintenance-rules-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.maintenance-rules-icon {
+  color: var(--status-orange);
+}
+
+/* Form Styles for Raise Request Form inside Modal */
+.maintenance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.maintenance-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.maintenance-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.maintenance-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.maintenance-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Card Detail Dialog Styles */
+.card-detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-detail-section {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 10px;
+}
+
+.card-detail-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.card-detail-section h4 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.card-detail-section p {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.tech-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
