@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, func
-from sqlalchemy.dialects.postgresql import TSTZRANGE, UUID
+from sqlalchemy.dialects.postgresql import TSTZRANGE, UUID, ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -13,6 +13,14 @@ from app.models.enums import BookingStatus
 
 class Booking(Base):
     __tablename__ = "bookings"
+    __table_args__ = (
+        ExcludeConstraint(
+            ("asset_id", "="),
+            ("time_range", "&&"),
+            where="status != 'CANCELLED'",
+            name="prevent_overlapping_bookings",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()

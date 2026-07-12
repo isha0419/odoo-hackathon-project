@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, ForeignKey, Text, func
+from sqlalchemy import Date, ForeignKey, Text, func, Index, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,6 +13,14 @@ from app.models.enums import AllocationStatus
 
 class Allocation(Base):
     __tablename__ = "allocations"
+    __table_args__ = (
+        Index(
+            "one_active_allocation_per_asset",
+            "asset_id",
+            unique=True,
+            postgresql_where=text("returned_at IS NULL"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
