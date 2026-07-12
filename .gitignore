@@ -1,0 +1,43 @@
+# ── Design doc (tracked separately) ──
+design.md
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──
+.venv/
+venv/
+env/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Testing ──
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Environment ──
+.env
+.env.local
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Docker ──
+postgres-data/
+
+# ── Node (frontend) ──
+node_modules/

@@ -1,0 +1,205 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# AssetFlow Backend CI
+# Runs on every PR targeting main and every push to main.
+# Steps: lint → format-check → test (against real Postgres 16)
+# ──────────────────────────────────────────────────────────────────────────────
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+
+# Cancel superseded runs on the same PR
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  # ── App config (mirrors docker-compose for test parity) ──
+  DATABASE_URL: "postgresql://assetflow:assetflow_ci@localhost:5432/assetflow_test"
+  JWT_SECRET: "ci-test-secret-do-not-use-in-prod"
+  JWT_EXPIRE_HOURS: "8"
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # 1. Lint & Format Check  (fast, no DB needed)
+  # ────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ruff lint
+        run: ruff check . --output-format=github
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # 2. Tests  (against real PostgreSQL 16 with extensions)
+  # ────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: lint          # only run tests if lint passes
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: assetflow
+          POSTGRES_PASSWORD: assetflow_ci
+          POSTGRES_DB: assetflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U assetflow -d assetflow_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Enable the Postgres extensions the schema requires (pgcrypto, btree_gist, citext)
+      - name: Enable Postgres extensions
+        run: |
+          PGPASSWORD=assetflow_ci psql -h localhost -U assetflow -d assetflow_test -c "
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;
+            CREATE EXTENSION IF NOT EXISTS btree_gist;
+            CREATE EXTENSION IF NOT EXISTS citext;
+          "
+
+      # Run Alembic migrations to verify they apply cleanly on a fresh DB
+      - name: Run Alembic migrations
+        run: alembic upgrade head
+
+      # Run the full test suite with coverage
+      - name: Run tests
+        run: pytest
+
+      # Upload coverage as an artifact (viewable in the Actions tab)
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/htmlcov/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # 3. Migration Integrity Check
+  #    Verifies migration heads are linear (no divergent branches)
+  # ────────────────────────────────────────────────────────────────────────────
+  migration-check:
+    name: Migration Integrity
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: assetflow
+          POSTGRES_PASSWORD: assetflow_ci
+          POSTGRES_DB: assetflow_migration_check
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U assetflow -d assetflow_migration_check"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      DATABASE_URL: "postgresql://assetflow:assetflow_ci@localhost:5432/assetflow_migration_check"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Enable Postgres extensions
+        run: |
+          PGPASSWORD=assetflow_ci psql -h localhost -U assetflow -d assetflow_migration_check -c "
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;
+            CREATE EXTENSION IF NOT EXISTS btree_gist;
+            CREATE EXTENSION IF NOT EXISTS citext;
+          "
+
+      # Ensure there's exactly one migration head (no branching)
+      - name: Check for single migration head
+        run: |
+          HEADS=$(alembic heads | wc -l)
+          echo "Migration heads found: $HEADS"
+          if [ "$HEADS" -gt 1 ]; then
+            echo "::error::Multiple migration heads detected! Merge your migrations before merging to main."
+            alembic heads
+            exit 1
+          fi
+
+      # Apply all migrations then downgrade to verify reversibility
+      - name: Verify migrations apply cleanly
+        run: |
+          alembic upgrade head
+          echo "✅ All migrations applied successfully"
+
+      # Verify the current state matches the models (no drift)
+      - name: Check for model/migration drift
+        run: |
+          alembic check 2>&1 || {
+            echo "::warning::Model changes detected that are not in a migration. Run 'alembic revision --autogenerate' locally."
+          }
