@@ -10,7 +10,8 @@ from app.models.asset import Asset
 from app.models.audit_cycle import AuditCycle
 from app.models.audit_cycle_auditor import AuditCycleAuditor
 from app.models.audit_item import AuditItem
-from app.models.enums import AssetStatus, AuditCycleStatus, AuditVerification, NotificationType
+from app.models.enums import AssetStatus, AuditCycleStatus, AuditVerification, NotificationType, UserRole
+from app.models.user import User
 from app.schemas.audit import AssignAuditorsRequest, AuditCycleCreate, AuditItemUpdate
 from app.services import activity_service, notifications_service
 
@@ -108,15 +109,17 @@ def mark_item(db: Session, item_id: uuid.UUID, data: AuditItemUpdate, actor_id: 
     if not item:
         raise HTTPException(status_code=404, detail="Audit item not found")
 
-    # Check if actor is an assigned auditor
-    is_auditor = db.scalar(
-        select(AuditCycleAuditor).where(
-            AuditCycleAuditor.audit_cycle_id == item.audit_cycle_id, AuditCycleAuditor.user_id == actor_id
+    # design.md Section 8.1: Admin and Asset Manager can always mark items; Department
+    # Head and Employee only if assigned as an auditor on this specific cycle.
+    actor = db.get(User, actor_id)
+    if not actor or actor.role not in (UserRole.ADMIN, UserRole.ASSET_MANAGER):
+        is_auditor = db.scalar(
+            select(AuditCycleAuditor).where(
+                AuditCycleAuditor.audit_cycle_id == item.audit_cycle_id, AuditCycleAuditor.user_id == actor_id
+            )
         )
-    )
-    if not is_auditor:
-        # Admins should probably bypass this, but spec says "Only assigned auditors can mark items"
-        raise HTTPException(status_code=403, detail="You are not assigned as an auditor for this cycle")
+        if not is_auditor:
+            raise HTTPException(status_code=403, detail="You are not assigned as an auditor for this cycle")
 
     item.verification = data.verification
     item.notes = data.notes
