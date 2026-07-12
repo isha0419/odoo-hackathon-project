@@ -1,29 +1,218 @@
-.reports {
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Reports.css */
+
+.reports-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.75rem;
+  max-width: 950px;
+  margin: 0 auto;
+  font-family: var(--font-body);
 }
 
-.reports h3 {
-  font-size: 13px;
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-  font-weight: 500;
+.reports-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.reports__charts,
-.reports__lists {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-.reports__lists ul {
+.reports-title {
   margin: 0;
-  padding-left: 16px;
-  font-size: 13px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reports-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Charts Grid Row */
+.reports-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .reports-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom Blue Cards for Charts matching mockup */
+.reports-chart-card {
+  background: #0a1726 !important;
+  border: 1.5px solid var(--status-blue) !important;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reports-chart-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Customizing SVGs/Elements inside Chart Components */
+
+/* Bar chart gold/yellow outline */
+.reports-chart-card .chart__bar {
+  border: 1.5px solid var(--status-orange) !important;
+  background: rgba(240, 166, 60, 0.06) !important;
+  border-radius: 4px 4px 0 0;
+  transition: background-color var(--transition-fast);
+}
+
+.reports-chart-card .chart__bar:hover {
+  background: rgba(240, 166, 60, 0.16) !important;
+}
+
+.reports-chart-card .chart__bar-label {
   color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* Line Chart red line path */
+.reports-chart-card .chart__svg polyline {
+  stroke: var(--status-red) !important;
+  stroke-width: 2 !important;
+}
+
+.reports-chart-card .chart__line-labels {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Lists Grid Row (Most Used and Idle) */
+.reports-lists-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 600px) {
+  .reports-lists-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.reports-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-list-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  border-bottom: 1px dashed var(--border-subtle);
+  padding-bottom: 6px;
+}
+
+.reports-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.reports-list-item {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reports-list-item::before {
+  content: "•";
+  color: var(--brand);
+  font-size: 1.2rem;
+}
+
+/* Divider Line */
+.reports-divider {
+  border: 0;
+  border-top: 1.5px solid var(--border-subtle);
+  margin: 0.5rem 0;
+}
+
+/* Alert Section: Maintenance & Retirement */
+.reports-alert-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-alert-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.reports-alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reports-alert-item {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reports-alert-item::before {
+  content: "⚠";
+  color: var(--status-orange);
+  font-size: 1rem;
+}
+
+/* Export Button styled as dark reddish/brown capsule */
+.reports-export-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.reports-export-btn {
+  background: #251918 !important;
+  border: 1.5px solid #633f3a !important;
+  color: #e5484d !important;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.reports-export-btn:hover {
+  background: rgba(229, 72, 77, 0.1) !important;
+  border-color: var(--status-red) !important;
+  transform: translateY(-1px);
+}
+
+.reports-export-btn:active {
+  transform: translateY(1px);
 }

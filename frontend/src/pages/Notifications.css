@@ -1,66 +1,202 @@
-.notifications {
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Notifications.css */
+
+.notifications-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-body);
 }
 
-.notifications__tabs {
+.notifications-header {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.notifications__tab {
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-elevated);
+.notifications-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.notifications-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Tabs Toolbar with custom colored outlines matching sketch */
+.notifications-tabs-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid var(--border-subtle);
+  padding-bottom: 14px;
+}
+
+.notifications-tabs {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.notifications-tab-btn {
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.notifications-tab-btn:hover {
+  transform: scale(1.03);
+}
+
+.notifications-tab-btn:active {
+  transform: scale(0.97);
+}
+
+/* All Tab - Green Outline */
+.notifications-tab-btn--all {
+  border: 1.5px solid var(--status-green);
   color: var(--text-secondary);
-  font-size: 12px;
+}
+.notifications-tab-btn--all:hover,
+.notifications-tab-btn--all.active {
+  color: var(--status-green);
+  background: var(--status-green-bg);
+  font-weight: 600;
+}
+
+/* Alerts Tab - Red Outline */
+.notifications-tab-btn--alerts {
+  border: 1.5px solid var(--status-red);
+  color: var(--text-secondary);
+}
+.notifications-tab-btn--alerts:hover,
+.notifications-tab-btn--alerts.active {
+  color: var(--status-red);
+  background: var(--status-red-bg);
+  font-weight: 600;
+}
+
+/* Approvals Tab - Orange Outline */
+.notifications-tab-btn--approvals {
+  border: 1.5px solid var(--status-orange);
+  color: var(--text-secondary);
+}
+.notifications-tab-btn--approvals:hover,
+.notifications-tab-btn--approvals.active {
+  color: var(--status-orange);
+  background: var(--status-orange-bg);
+  font-weight: 600;
+}
+
+/* Bookings Tab - Purple/Pink Outline */
+.notifications-tab-btn--bookings {
+  border: 1.5px solid #c084fc;
+  color: var(--text-secondary);
+}
+.notifications-tab-btn--bookings:hover,
+.notifications-tab-btn--bookings.active {
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.14);
+  font-weight: 600;
+}
+
+/* Frameless List of Notification Rows */
+.notifications-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 8px;
+  border-bottom: 1.5px solid var(--border-subtle);
+  transition: background var(--transition-fast), opacity var(--transition-fast);
   cursor: pointer;
 }
 
-.notifications__tab--active {
-  background: var(--status-green-bg);
-  color: var(--status-green);
-  border-color: transparent;
+.notifications-item:hover {
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.notifications__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.notifications-item--read {
+  opacity: 0.65;
+}
+
+.notifications-left {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 13px;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
 
-.notifications__list li {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.notifications__list li:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.notifications__list li.unread {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-.notifications__list li.read {
-  color: var(--text-secondary);
-}
-
-.notifications__time {
-  color: var(--text-muted);
-  font-weight: 400 !important;
+/* Colored block indicator matching sketch */
+.notifications-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid transparent;
   flex-shrink: 0;
-  margin-left: 12px;
 }
 
-.notifications__section-title {
-  font-size: 14px;
+.notifications-indicator--blue {
+  border-color: var(--status-blue);
+  background: rgba(76, 155, 232, 0.2);
+}
+
+.notifications-indicator--green {
+  border-color: var(--status-green);
+  background: rgba(53, 196, 124, 0.2);
+}
+
+.notifications-indicator--red {
+  border-color: var(--status-red);
+  background: rgba(229, 72, 77, 0.2);
+}
+
+.notifications-indicator--orange {
+  border-color: var(--status-orange);
+  background: rgba(240, 166, 60, 0.2);
+}
+
+.notifications-text {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.notifications-time {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-left: 12px;
+}
+
+/* General Layouts */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  border: 1.5px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  font-size: 1.1rem;
 }

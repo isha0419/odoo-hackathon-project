@@ -1,8 +1,169 @@
-.booking__resource {
-  font-size: 14px;
-  margin-bottom: 14px;
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Booking.css */
+
+.booking-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-body);
 }
 
-.booking__book-btn {
-  margin-top: 16px;
+.booking-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.booking-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.booking-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Labeled Select Dropdown (matches Top Resource block in mockup) */
+.booking-resource-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.booking-resource-label {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.booking-resource-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  background: var(--bg-root);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.booking-resource-select:focus {
+  border-color: var(--border-strong);
+}
+
+/* Overriding Calender Component styling to match hand-drawn sketch wireframe */
+.booking-page .calendar {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.booking-page .calendar__row {
+  display: flex;
+  align-items: center;
+  border-bottom: none;
+  gap: 16px;
+}
+
+.booking-page .calendar__time {
+  width: 60px;
+  border-right: none;
+  padding: 0;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  text-align: right;
+  font-weight: 500;
+}
+
+.booking-page .calendar__track {
+  flex: 1;
+  min-height: 52px;
+  display: flex;
+  padding: 0;
+}
+
+/* Slot button customization for hand-drawn capsules */
+.booking-page .calendar__slot {
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+}
+
+.booking-page .calendar__slot--free {
+  border: 1.5px dashed var(--border-subtle);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.booking-page .calendar__slot--free:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-strong);
+}
+
+/* Blue outline capsule card matching sketch */
+.booking-page .calendar__slot--booked {
+  background: #0f1c2d !important;
+  border: 1.5px solid var(--status-blue) !important;
+  color: var(--status-blue) !important;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 10px rgba(76, 155, 232, 0.1);
+  cursor: default;
+}
+
+/* Red dashed outline capsule card matching sketch */
+.booking-page .calendar__slot--conflict {
+  background: transparent !important;
+  border: 1.5px dashed var(--status-red) !important;
+  color: var(--status-red) !important;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 10px rgba(229, 72, 77, 0.05);
+  cursor: default;
+}
+
+/* Green Outline Capsule Button for Booking */
+.booking-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.booking-book-btn {
+  background: transparent !important;
+  border: 1.5px solid var(--status-green) !important;
+  color: var(--status-green) !important;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.booking-book-btn:hover {
+  background: var(--status-green-bg) !important;
+  border-color: var(--status-green) !important;
+  transform: translateY(-1px);
+}
+
+.booking-book-btn:active {
+  transform: translateY(1px);
 }

@@ -1,33 +1,154 @@
+/* D:\Hackathons\odoo-hackathon-project\frontend\src\pages\Dashboard.css */
+
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--font-body);
 }
 
 .dashboard__title {
-  font-size: 22px;
-  font-weight: 400;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  border-bottom: 1.5px solid var(--border-subtle);
+  padding-bottom: 8px;
 }
 
+/* Red alert banner card matching mockup */
 .dashboard__alert {
-  color: #e08880;
-  background: linear-gradient(90deg, rgba(139, 45, 45, 0.25), rgba(13, 13, 16, 0.4));
-  border-color: rgba(224, 136, 128, 0.5);
-  font-size: 16px;
+  background: #281a18 !important;
+  border: 1.5px solid var(--status-red) !important;
+  color: var(--status-red) !important;
+  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+.dashboard__alert:hover {
+  background: #332120 !important;
+  border-color: var(--status-red) !important;
+  transform: translateY(-1px);
+}
+
+.dashboard__alert:active {
+  transform: translateY(1px);
+}
+
+/* Actions Button Row */
 .dashboard__actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
 
+/* Specific green outline button for "+ register asset" */
+.dashboard__actions .btn--register {
+  border: 1.5px solid var(--status-green) !important;
+  color: var(--status-green) !important;
+  background: transparent !important;
+}
+
+.dashboard__actions .btn--register:hover {
+  background: var(--status-green-bg) !important;
+}
+
+/* frameless Recent Activity trail */
 .dashboard__activity {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 16px;
+  gap: 10px;
+}
+
+.dashboard__activity-item {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.dashboard__activity-item::before {
+  content: "•";
+  color: var(--brand);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+/* Overriding KPI Card style rules for sketch layout */
+.dashboard .kpi {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  transition: border-color var(--transition-base);
+}
+
+.dashboard .kpi:hover {
+  border-color: var(--border-strong);
+}
+
+.dashboard .kpi__label {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.dashboard .kpi__value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
   color: var(--text-primary);
+  margin-top: 4px;
+}
+
+/* Overdue return modal list styles */
+.overdue-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.overdue-modal-table th {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.overdue-modal-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.overdue-modal-action-btn {
+  background: transparent;
+  border: 1px solid var(--status-orange);
+  color: var(--status-orange);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.overdue-modal-action-btn:hover {
+  background: var(--status-orange-bg);
 }
