@@ -1,0 +1,87 @@
+.reports-export {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.reports-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.reports-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.report-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.report-list-value {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.heatmap-wrap {
+  overflow-x: auto;
+}
+
+.heatmap-table {
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.heatmap-table th {
+  color: var(--text-faint);
+  font-weight: 400;
+  padding: 2px 3px;
+}
+
+.heatmap-row-label {
+  color: var(--text-dim);
+  padding-right: 8px;
+  font-size: 11px;
+  text-align: right;
+}
+
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--surface-alt);
+}
+
+.heatmap-table td {
+  padding: 1.5px;
+}
+
+@media (max-width: 900px) {
+  .reports-charts,
+  .reports-lists {
+    grid-template-columns: 1fr;
+  }
+}

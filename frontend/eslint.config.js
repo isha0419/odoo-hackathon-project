@@ -24,6 +24,11 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // This app fetches over plain fetch()/useEffect (no react-query/SWR), so the
+      // idiomatic setLoading(true) -> fetch -> setLoading(false) pattern is
+      // unavoidable and is exactly what this rule flags. Revisit if a data-fetching
+      // library is introduced.
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ])
