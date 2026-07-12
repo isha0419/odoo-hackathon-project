@@ -27,8 +27,12 @@ def allocate(db: Session, data: AllocateRequest, actor_id: uuid.UUID) -> Allocat
     from app.models.user import User
 
     actor = db.get(User, actor_id)
+    target_department_id = data.holder_department_id
+    if target_department_id is None and data.holder_user_id:
+        holder = db.get(User, data.holder_user_id)
+        target_department_id = holder.department_id if holder else None
     if actor:
-        check_department_scope(actor, asset.department_id)
+        check_department_scope(actor, target_department_id)
 
     if asset.status not in (AssetStatus.AVAILABLE, AssetStatus.ALLOCATED):
         raise HTTPException(
@@ -109,8 +113,8 @@ def return_asset(db: Session, allocation_id: uuid.UUID, notes: str | None, actor
     from app.models.user import User
 
     actor = db.get(User, actor_id)
-    if actor and alloc.asset:
-        check_department_scope(actor, alloc.asset.department_id)
+    if actor:
+        check_department_scope(actor, alloc.holder_department_id)
 
     if alloc.status != AllocationStatus.ACTIVE:
         raise HTTPException(status_code=422, detail="Allocation is already closed")

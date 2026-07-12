@@ -82,8 +82,8 @@ def approve(db: Session, transfer_id: uuid.UUID, actor_id: uuid.UUID) -> Transfe
     from app.models.user import User
 
     actor = db.get(User, actor_id)
-    if actor and transfer.asset:
-        check_department_scope(actor, transfer.asset.department_id)
+    if actor and transfer.from_user:
+        check_department_scope(actor, transfer.from_user.department_id)
 
     # Find old allocation
     old_alloc = db.scalar(
@@ -158,8 +158,8 @@ def reject(db: Session, transfer_id: uuid.UUID, actor_id: uuid.UUID) -> Transfer
     from app.models.user import User
 
     actor = db.get(User, actor_id)
-    if actor and transfer.asset:
-        check_department_scope(actor, transfer.asset.department_id)
+    if actor and transfer.from_user:
+        check_department_scope(actor, transfer.from_user.department_id)
 
     transfer.status = TransferStatus.REJECTED
     transfer.approved_by = actor_id

@@ -26,7 +26,7 @@ def admin_user(db_session: Session, test_dept: Department) -> User:
         name="Admin Test",
         email="admin.test@example.com",
         role=UserRole.ADMIN,
-        hashed_password="hashed",
+        password_hash="hashed",
         department_id=test_dept.id,
     )
     db_session.add(user)
@@ -37,7 +37,9 @@ def admin_user(db_session: Session, test_dept: Department) -> User:
 
 @pytest.fixture
 def admin_token(admin_user: User) -> str:
-    return create_access_token(data={"sub": str(admin_user.id)})
+    return create_access_token(
+        sub=str(admin_user.id), role=admin_user.role.value, department_id=str(admin_user.department_id)
+    )
 
 
 @pytest.fixture
@@ -61,9 +63,9 @@ def non_bookable_category(db_session: Session) -> AssetCategory:
 @pytest.fixture
 def bookable_asset(db_session: Session, bookable_category: AssetCategory, test_dept: Department) -> Asset:
     asset = Asset(
+        asset_tag="TEST-0001",
         name="Projector 1",
         category_id=bookable_category.id,
-        department_id=test_dept.id,
         is_bookable=True,
         status=AssetStatus.AVAILABLE,
     )
@@ -76,9 +78,9 @@ def bookable_asset(db_session: Session, bookable_category: AssetCategory, test_d
 @pytest.fixture
 def non_bookable_asset(db_session: Session, non_bookable_category: AssetCategory, test_dept: Department) -> Asset:
     asset = Asset(
+        asset_tag="TEST-0002",
         name="Laptop 1",
         category_id=non_bookable_category.id,
-        department_id=test_dept.id,
         is_bookable=False,
         status=AssetStatus.AVAILABLE,
     )
@@ -99,16 +101,15 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Presentation",
+                "start": start,
+                "end": end,
             },
         )
         assert response.status_code == 200
         data = response.json()
         assert data["asset_id"] == str(bookable_asset.id)
         assert data["temporal_status"] == "UPCOMING"
-        assert data["status"] == "ACTIVE"
+        assert data["status"] == "UPCOMING"
 
     def test_book_overlap_fails(self, client, admin_token, bookable_asset):
         now = datetime.utcnow()
@@ -121,9 +122,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Meeting 1",
+                "start": start,
+                "end": end,
             },
         )
 
@@ -135,15 +135,14 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": overlap_start,
-                "end_time": overlap_end,
-                "purpose": "Meeting 2",
+                "start": overlap_start,
+                "end": overlap_end,
             },
         )
         assert response.status_code == 409
         data = response.json()
-        assert "overlap_type" in data
-        assert data["overlap_type"] == "BOOKING_OVERLAP"
+        assert data["error"] == "booking_overlap"
+        assert "conflicting_booking" in data
 
     def test_book_touching_endpoints_success(self, client, admin_token, bookable_asset):
         now = datetime.utcnow()
@@ -157,9 +156,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": t1,
-                "end_time": t2,
-                "purpose": "Meeting 1",
+                "start": t1,
+                "end": t2,
             },
         )
         assert res1.status_code == 200
@@ -170,9 +168,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": t2,
-                "end_time": t3,
-                "purpose": "Meeting 2",
+                "start": t2,
+                "end": t3,
             },
         )
         assert res2.status_code == 200
@@ -187,9 +184,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(non_bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Meeting",
+                "start": start,
+                "end": end,
             },
         )
         assert response.status_code == 422
@@ -207,9 +203,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Meeting",
+                "start": start,
+                "end": end,
             },
         )
         booking_id = create_res.json()["id"]
@@ -228,9 +223,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Rebook",
+                "start": start,
+                "end": end,
             },
         )
         assert rebook_res.status_code == 200
@@ -245,9 +239,8 @@ class TestBookingService:
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "asset_id": str(bookable_asset.id),
-                "start_time": start,
-                "end_time": end,
-                "purpose": "Meeting",
+                "start": start,
+                "end": end,
             },
         )
         booking_id = create_res.json()["id"]
@@ -262,7 +255,7 @@ class TestBookingService:
             json={"new_start": new_start, "new_end": new_end},
         )
         assert resched_res.status_code == 200
-        assert resched_res.json()["status"] == "ACTIVE"
+        assert resched_res.json()["status"] == "UPCOMING"
 
         # Original booking should be cancelled
         list_res = client.get(
@@ -274,4 +267,4 @@ class TestBookingService:
             if b["id"] == booking_id:
                 assert b["status"] == "CANCELLED"
             else:
-                assert b["status"] == "ACTIVE"
+                assert b["status"] == "UPCOMING"
