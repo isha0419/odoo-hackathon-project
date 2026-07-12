@@ -591,16 +591,16 @@ Wire up all endpoints from Section 11 (Bookings, Maintenance):
 
 ### Stage 3 — Gate Checklist
 
-- [ ] **Crown Jewel #2**: Booking overlap blocked at BOTH service and DB level
-- [ ] 409 response matches Section 7 JSON format exactly
-- [ ] Half-open ranges work correctly (touching endpoints allowed)
-- [ ] Calendar read with derived temporal statuses
-- [ ] Cancel/reschedule functional
-- [ ] Maintenance state machine: all valid transitions work, invalid ones rejected
-- [ ] Asset status driven by maintenance (UNDER_MAINTENANCE ↔ AVAILABLE)
-- [ ] Kanban list groupable by status
-- [ ] All activity logged, notifications sent
-- [ ] All guards match Section 8.1
+- [x] **Crown Jewel #2**: Booking overlap blocked at BOTH service and DB level
+- [x] 409 response matches Section 7 JSON format exactly
+- [x] Half-open ranges work correctly (touching endpoints allowed)
+- [x] Calendar read with derived temporal statuses
+- [x] Cancel/reschedule functional
+- [x] Maintenance state machine: all valid transitions work, invalid ones rejected
+- [x] Asset status driven by maintenance (UNDER_MAINTENANCE ↔ AVAILABLE)
+- [x] Kanban list groupable by status
+- [x] All activity logged, notifications sent
+- [x] All guards match Section 8.1
 
 ---
 
@@ -800,15 +800,15 @@ Wire up remaining endpoints from Section 11:
 
 ### Stage 4 — Gate Checklist
 
-- [ ] Activity log helper writes rows correctly
-- [ ] Notification helper creates notifications correctly
-- [ ] `sync_derived()` generates OVERDUE_RETURN and BOOKING_REMINDER idempotently
-- [ ] Audit cycle: create→snapshot, assign auditors, mark items, close→LOST+discrepancies
-- [ ] All 7 report endpoints return correct data + CSV export
-- [ ] Dashboard returns all KPIs, calls sync_derived first
-- [ ] Notifications list with sync, mark-read
-- [ ] Activity logs scoped by role
-- [ ] All guards match Section 8.1
+- [x] Activity log helper writes rows correctly
+- [x] Notification helper creates notifications correctly
+- [x] `sync_derived()` generates OVERDUE_RETURN and BOOKING_REMINDER idempotently
+- [x] Audit cycle: create→snapshot, assign auditors, mark items, close→LOST+discrepancies
+- [x] All 7 report endpoints return correct data + CSV export
+- [x] Dashboard returns all KPIs, calls sync_derived first
+- [x] Notifications list with sync, mark-read
+- [x] Activity logs scoped by role
+- [x] All guards match Section 8.1
 
 ---
 

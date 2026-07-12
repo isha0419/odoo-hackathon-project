@@ -10,7 +10,7 @@ from app.models.asset import Asset
 from app.models.audit_cycle import AuditCycle
 from app.models.audit_cycle_auditor import AuditCycleAuditor
 from app.models.audit_item import AuditItem
-from app.models.enums import AssetStatus, AuditStatus, AuditVerification, NotificationType
+from app.models.enums import AssetStatus, AuditCycleStatus, AuditVerification, NotificationType
 from app.schemas.audit import AssignAuditorsRequest, AuditCycleCreate, AuditItemUpdate
 from app.services import activity_service, notifications_service
 
@@ -38,7 +38,7 @@ def create_cycle(db: Session, data: AuditCycleCreate, actor_id: uuid.UUID) -> Au
         scope_location=data.scope_location,
         start_date=data.start_date,
         end_date=data.end_date,
-        status=AuditStatus.OPEN,
+        status=AuditCycleStatus.OPEN,
     )
     db.add(cycle)
     db.flush()
@@ -133,10 +133,10 @@ def close_cycle(db: Session, cycle_id: uuid.UUID, actor_id: uuid.UUID) -> AuditC
     if not cycle:
         raise HTTPException(status_code=404, detail="Audit cycle not found")
 
-    if cycle.status == AuditStatus.CLOSED:
+    if cycle.status == AuditCycleStatus.CLOSED:
         raise HTTPException(status_code=422, detail="Audit cycle is already closed")
 
-    cycle.status = AuditStatus.CLOSED
+    cycle.status = AuditCycleStatus.CLOSED
     db.add(cycle)
 
     # Process missing items

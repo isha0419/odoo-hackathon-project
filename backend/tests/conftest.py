@@ -31,9 +31,18 @@ TestSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 @pytest.fixture(scope="session", autouse=True)
 def _setup_database():
     """Create all tables at start, drop at end."""
+    with engine.begin() as conn:
+        from sqlalchemy import text
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist;"))
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS citext;"))
     Base.metadata.create_all(bind=engine)
     yield
-    Base.metadata.drop_all(bind=engine)
+    # Base.metadata.drop_all(bind=engine)
+    with engine.begin() as conn:
+        from sqlalchemy import text
+        conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"))
+        conn.execute(text("GRANT ALL ON SCHEMA public TO assetflow;"))
 
 
 # ── Function-scoped: each test gets a rolled-back transaction ────────────────

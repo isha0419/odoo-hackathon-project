@@ -21,6 +21,9 @@ class Asset(Base):
     category_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("asset_categories.id"), nullable=False
     )
+    department_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=True
+    )
     serial_number: Mapped[str | None] = mapped_column(Text, unique=True, nullable=True)
     acquisition_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     acquisition_cost: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
