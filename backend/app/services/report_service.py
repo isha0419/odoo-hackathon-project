@@ -5,7 +5,7 @@ import io
 import uuid
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.allocation import Allocation
 from app.models.asset import Asset
@@ -77,20 +77,40 @@ def get_most_used(db: Session, dept_id: uuid.UUID | None = None) -> list[MostUse
 
 def get_idle(db: Session, dept_id: uuid.UUID | None = None) -> list[IdleReport]:
     # Assets with no active allocations
-    # If dept_id is provided, this report might not make much sense because assets don't belong to a dept unless allocated.
-    # We will just return globally idle assets.
-    stmt = select(Asset).where(~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE)).limit(20)
+    stmt = select(Asset).options(
+        joinedload(Asset.allocations),
+        joinedload(Asset.bookings)
+    ).where(~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE)).limit(20)
 
-    results = db.scalars(stmt).all()
-    return [
-        IdleReport(
-            asset_id=str(a.id),
-            asset_tag=a.asset_tag,
-            name=a.name,
-            days_idle=30,  # arbitrary placeholder for hackathon
+    results = db.scalars(stmt).unique().all()
+    from datetime import date
+    today = date.today()
+    reports = []
+
+    for a in results:
+        last_date = a.created_at.date() if a.created_at else today
+
+        if a.allocations:
+            alloc_dates = [alloc.returned_at.date() for alloc in a.allocations if alloc.returned_at]
+            if alloc_dates:
+                last_date = max(last_date, max(alloc_dates))
+
+        if a.bookings:
+            booking_dates = [b.time_range.upper.date() for b in a.bookings if b.time_range and b.time_range.upper]
+            if booking_dates:
+                last_date = max(last_date, max(booking_dates))
+
+        days_idle = max(0, (today - last_date).days)
+
+        reports.append(
+            IdleReport(
+                asset_id=str(a.id),
+                asset_tag=a.asset_tag,
+                name=a.name,
+                days_idle=days_idle,
+            )
         )
-        for a in results
-    ]
+    return reports
 
 
 def get_maintenance_freq(db: Session, dept_id: uuid.UUID | None = None) -> list[MaintenanceFreqReport]:
@@ -145,7 +165,26 @@ def export_csv(db: Session, report: str, dept_id: uuid.UUID | None = None) -> st
         writer.writerow(["Asset Tag", "Name", "Usage Count"])
         for d in data:
             writer.writerow([d.asset_tag, d.name, d.usage_count])
-    # add other reports as needed for hackathon
+    elif report == "idle":
+        data = get_idle(db, dept_id)
+        writer.writerow(["Asset Tag", "Name", "Days Idle"])
+        for d in data:
+            writer.writerow([d.asset_tag, d.name, d.days_idle])
+    elif report == "maintenance-frequency":
+        data = get_maintenance_freq(db, dept_id)
+        writer.writerow(["Category", "Request Count"])
+        for d in data:
+            writer.writerow([d.category_name, d.request_count])
+    elif report == "due":
+        data = get_due(db, dept_id)
+        writer.writerow(["Asset Tag", "Name", "Reason"])
+        for d in data:
+            writer.writerow([d.asset_tag, d.name, d.reason])
+    elif report == "booking-heatmap":
+        data = get_booking_heatmap(db, dept_id)
+        writer.writerow(["Day of Week", "Hour of Day", "Count"])
+        for d in data:
+            writer.writerow([d.day_of_week, d.hour_of_day, d.count])
     else:
         writer.writerow(["Unsupported Report"])
 

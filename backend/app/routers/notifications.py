@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.deps import get_current_user
 from app.models.notification import Notification
+from app.models.enums import NotificationType
 from app.models.user import User
 from app.schemas.notifications import NotificationOut
 from app.services import notifications_service
@@ -18,6 +19,7 @@ router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 @router.get("", response_model=list[NotificationOut])
 def list_notifications(
+    type: NotificationType | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),
@@ -28,10 +30,11 @@ def list_notifications(
     stmt = (
         select(Notification)
         .where(Notification.recipient_user_id == current_user.id)
-        .order_by(Notification.created_at.desc())
-        .limit(limit)
-        .offset(offset)
     )
+    if type:
+        stmt = stmt.where(Notification.type == type)
+
+    stmt = stmt.order_by(Notification.created_at.desc()).limit(limit).offset(offset)
     return db.scalars(stmt).all()
 
 
