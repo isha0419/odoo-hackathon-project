@@ -1,13 +1,14 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # AssetFlow — Root Compose File
 # Usage:
-#   docker compose up -d            → start Postgres + API
-#   docker compose up -d --build    → rebuild API image first
-#   docker compose down             → stop (data persisted)
-#   docker compose down -v          → stop + wipe DB (fresh start)
-#   docker compose logs -f api      → tail API logs
+#   docker compose up -d --build     → build + start Postgres + API + Frontend
+#   docker compose down              → stop (data persisted)
+#   docker compose down -v           → stop + wipe DB (fresh start)
+#   docker compose logs -f api       → tail API logs
+#   docker compose exec api python -m app.seed.seed [--reset]  → load demo data
 #
 # After: GET http://localhost:8000/docs  → Swagger UI
+#        http://localhost:5173          → Frontend
 # ──────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -52,6 +53,22 @@ services:
     # Override CMD to enable hot-reload in dev; remove for prod image
     command: >
       sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: assetflow-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    # Mount source for hot-reload during local dev; keep the image's own
+    # node_modules (installed at build time) instead of the host's.
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   pgdata:
