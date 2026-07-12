@@ -19,10 +19,16 @@ class AssetAlreadyAllocatedError(Exception):
 
 
 def allocate(db: Session, data: AllocateRequest, actor_id: uuid.UUID) -> Allocation:
-    # 1. Check asset exists and status
     asset = db.scalar(select(Asset).where(Asset.id == data.asset_id))
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor:
+        check_department_scope(actor, asset.department_id)
 
     if asset.status not in (AssetStatus.AVAILABLE, AssetStatus.ALLOCATED):
         raise HTTPException(
@@ -95,9 +101,16 @@ def allocate(db: Session, data: AllocateRequest, actor_id: uuid.UUID) -> Allocat
 
 
 def return_asset(db: Session, allocation_id: uuid.UUID, notes: str | None, actor_id: uuid.UUID) -> Allocation:
-    alloc = db.scalar(select(Allocation).where(Allocation.id == allocation_id))
+    alloc = db.scalar(select(Allocation).options(joinedload(Allocation.asset)).where(Allocation.id == allocation_id))
     if not alloc:
         raise HTTPException(status_code=404, detail="Allocation not found")
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor and alloc.asset:
+        check_department_scope(actor, alloc.asset.department_id)
 
     if alloc.status != AllocationStatus.ACTIVE:
         raise HTTPException(status_code=422, detail="Allocation is already closed")

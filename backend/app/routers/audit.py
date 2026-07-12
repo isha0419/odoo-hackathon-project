@@ -19,7 +19,8 @@ from app.schemas.audit import (
 )
 from app.services import audit_service
 
-router = APIRouter(prefix="/audit", tags=["Audit"])
+router = APIRouter(prefix="/audit-cycles", tags=["Audit Cycles"])
+audit_items_router = APIRouter(prefix="/audit-items", tags=["Audit Items"])
 
 
 @router.post("", response_model=AuditCycleOut)
@@ -28,6 +29,7 @@ def create_audit_cycle(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER)),
 ):
+    # Only Admin and Asset Manager can create an audit cycle
     return audit_service.create_cycle(db, data, current_user.id)
 
 
@@ -38,6 +40,7 @@ def list_audit_cycles(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # All authenticated users can list audit cycles
     return audit_service.list_cycles(db, limit, offset)
 
 
@@ -50,17 +53,18 @@ def get_audit_cycle(
     return audit_service.get_cycle(db, cycle_id)
 
 
-@router.post("/{cycle_id}/assign", response_model=AuditCycleOut)
+@router.post("/{cycle_id}/auditors", response_model=AuditCycleOut)
 def assign_auditors(
     cycle_id: uuid.UUID,
     data: AssignAuditorsRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER)),
 ):
+    # Only Admin and Asset Manager can assign auditors
     return audit_service.assign_auditors(db, cycle_id, data, current_user.id)
 
 
-@router.post("/items/{item_id}/mark", response_model=AuditItemOut)
+@audit_items_router.patch("/{item_id}", response_model=AuditItemOut)
 def mark_audit_item(
     item_id: uuid.UUID,
     data: AuditItemUpdate,

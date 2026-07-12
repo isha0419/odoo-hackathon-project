@@ -39,6 +39,7 @@ def create_app() -> FastAPI:
     from app.routers.activity_logs import router as activity_logs_router
     from app.routers.allocation import router as allocation_router
     from app.routers.assets import router as assets_router
+    from app.routers.audit import audit_items_router
     from app.routers.audit import router as audit_router
     from app.routers.auth import router as auth_router
     from app.routers.booking import router as booking_router
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
     application.include_router(allocation_router, prefix="/api")
     application.include_router(assets_router, prefix="/api")
     application.include_router(audit_router, prefix="/api")
+    application.include_router(audit_items_router, prefix="/api")
     application.include_router(auth_router, prefix="/api")
     application.include_router(booking_router, prefix="/api")
     application.include_router(dashboard_router, prefix="/api")

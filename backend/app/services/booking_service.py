@@ -159,15 +159,14 @@ def reschedule(
         new_booking = create(db, new_data, actor_id)
         return new_booking
     except Exception as e:
-        # If create fails (e.g. overlap), the transaction will be rolled back by the caller,
-        # but create() doesn't rollback explicitly, so we just raise.
+        db.rollback()
         raise e
 
 
 def list_bookings(
     db: Session,
     asset_id: uuid.UUID | None = None,
-    date_val: datetime | None = None,  # Can be used to filter a specific day
+    date: datetime | None = None,
     limit: int = 50,
     offset: int = 0,
 ) -> list[Booking]:
@@ -179,7 +178,11 @@ def list_bookings(
     if asset_id:
         stmt = stmt.where(Booking.asset_id == asset_id)
 
-    # Example logic for date filter if needed, could use time_range boundaries
+    if date:
+        # Use Postgres range operators to check if the date falls within the time_range,
+        # or simply cast time_range boundaries to date and compare.
+        # SQLAlchemy and psycopg2 support the @> operator for ranges.
+        stmt = stmt.where(Booking.time_range.contains(date))
 
     stmt = stmt.order_by(Booking.created_at.desc()).limit(limit).offset(offset)
     return db.scalars(stmt).all()

@@ -69,13 +69,23 @@ def require_same_department(department_id: uuid.UUID):
     """
 
     async def _check(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role in (UserRole.ADMIN, UserRole.ASSET_MANAGER):
-            return current_user
-        if current_user.role == UserRole.DEPARTMENT_HEAD and current_user.department_id != department_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access restricted to own department",
-            )
+        check_department_scope(current_user, department_id)
         return current_user
 
     return _check
+
+
+def check_department_scope(current_user: User, department_id: uuid.UUID | None):
+    """
+    Synchronous helper to enforce department isolation for DEPARTMENT_HEAD role.
+    Raises 403 if they attempt to act on another department's resources.
+    """
+    if current_user.role in (UserRole.ADMIN, UserRole.ASSET_MANAGER):
+        return
+    if current_user.role == UserRole.DEPARTMENT_HEAD and (
+        department_id is None or current_user.department_id != department_id
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted to own department",
+        )

@@ -13,6 +13,19 @@ from app.services import activity_service, notifications_service
 
 
 def raise_request(db: Session, data: MaintenanceCreate, actor_id: uuid.UUID) -> MaintenanceRequest:
+    from app.models.asset import Asset
+
+    asset = db.scalar(select(Asset).where(Asset.id == data.asset_id))
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor:
+        check_department_scope(actor, asset.department_id)
+
     req = MaintenanceRequest(
         asset_id=data.asset_id,
         raised_by=actor_id,
@@ -52,6 +65,13 @@ def transition(
     db: Session, request_id: uuid.UUID, data: MaintenanceTransition, actor_id: uuid.UUID
 ) -> MaintenanceRequest:
     req = get_detail(db, request_id)
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor and req.asset:
+        check_department_scope(actor, req.asset.department_id)
     old_status = req.status
     new_status = data.to_status
 

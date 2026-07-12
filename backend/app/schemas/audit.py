@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.models.enums import AuditStatus, AuditVerification
+from app.models.enums import AuditCycleStatus, AuditVerification
 
 
 class AuditCycleCreate(BaseModel):
@@ -65,7 +65,7 @@ class AuditCycleOut(BaseModel):
     scope_location: str | None
     start_date: date
     end_date: date
-    status: AuditStatus
+    status: AuditCycleStatus
     created_at: datetime
     updated_at: datetime
 

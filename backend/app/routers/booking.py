@@ -74,6 +74,7 @@ def reschedule_booking(
 @router.get("", response_model=list[BookingOut])
 def list_bookings(
     asset_id: uuid.UUID | None = None,
+    date: datetime | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),
@@ -82,6 +83,7 @@ def list_bookings(
     return booking_service.list_bookings(
         db=db,
         asset_id=asset_id,
+        date=date,
         limit=limit,
         offset=offset,
     )

@@ -26,6 +26,14 @@ def create(db: Session, data: TransferCreate, actor_id: uuid.UUID) -> TransferRe
     # We'll just take the holder as from_user_id
     from_user_id = active_alloc.holder_user_id
 
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor:
+        # Check against asset's department or active allocation holder's department
+        check_department_scope(actor, active_alloc.holder_department_id)
+
     transfer = TransferRequest(
         asset_id=data.asset_id,
         from_user_id=from_user_id,
@@ -69,6 +77,13 @@ def approve(db: Session, transfer_id: uuid.UUID, actor_id: uuid.UUID) -> Transfe
     transfer = get_detail(db, transfer_id)
     if transfer.status != TransferStatus.REQUESTED:
         raise HTTPException(status_code=422, detail="Transfer is not in REQUESTED state")
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor and transfer.asset:
+        check_department_scope(actor, transfer.asset.department_id)
 
     # Find old allocation
     old_alloc = db.scalar(
@@ -138,6 +153,13 @@ def reject(db: Session, transfer_id: uuid.UUID, actor_id: uuid.UUID) -> Transfer
     transfer = get_detail(db, transfer_id)
     if transfer.status != TransferStatus.REQUESTED:
         raise HTTPException(status_code=422, detail="Transfer is not in REQUESTED state")
+
+    from app.deps import check_department_scope
+    from app.models.user import User
+
+    actor = db.get(User, actor_id)
+    if actor and transfer.asset:
+        check_department_scope(actor, transfer.asset.department_id)
 
     transfer.status = TransferStatus.REJECTED
     transfer.approved_by = actor_id

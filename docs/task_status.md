@@ -25,8 +25,8 @@
 
 ## 🅱️ Satya (Backend Track 2)
 
-- [ ] Stage 2B — Booking + Maintenance + Audit
-  - [ ] Booking service + calendar endpoint
+- [X] Stage 2B — Booking + Maintenance + Audit
+  - [x] Booking service + calendar endpoint
   - [ ] Maintenance service + kanban transitions
   - [ ] Audit cycle service + discrepancy report
   - [ ] Reports & Dashboard KPI endpoints
