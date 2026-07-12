@@ -1,0 +1,58 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# AssetFlow — Root Compose File
+# Usage:
+#   docker compose up -d            → start Postgres + API
+#   docker compose up -d --build    → rebuild API image first
+#   docker compose down             → stop (data persisted)
+#   docker compose down -v          → stop + wipe DB (fresh start)
+#   docker compose logs -f api      → tail API logs
+#
+# After: GET http://localhost:8000/docs  → Swagger UI
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: assetflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: assetflow
+      POSTGRES_PASSWORD: assetflow
+      POSTGRES_DB: assetflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U assetflow -d assetflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assetflow-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://assetflow:assetflow@postgres:5432/assetflow
+      JWT_SECRET: change-me-in-production
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRE_HOURS: "8"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Mount source for hot-reload during local dev
+    volumes:
+      - ./backend:/app
+    # Override CMD to enable hot-reload in dev; remove for prod image
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  pgdata:
+    driver: local
