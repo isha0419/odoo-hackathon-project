@@ -1,6 +1,6 @@
 import Card from '../components/Card/Card';
 import Button from '../components/Button/Button';
-import Calendar from '../components/Calendar/Calendar';
+import Calender from '../components/Calender/Calender';
 import { mockBooking } from '../data/booking';
 import './Booking.css';
 

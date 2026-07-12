@@ -1,4 +1,4 @@
-import './Calendar.css';
+import './Calender.css';
 
 /**
  * Renders a vertical time-slot grid for a single resource/day.

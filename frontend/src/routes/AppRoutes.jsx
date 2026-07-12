@@ -7,7 +7,7 @@ import Organization from '../pages/Organization';
 import Assets from '../pages/Assets';
 import Allocation from '../pages/Allocation';
 import Booking from '../pages/Booking';
-import Maintenance from '../pages/Maintenance';
+import Maintainance from '../pages/Maintainance';
 import Audit from '../pages/Audit';
 import Reports from '../pages/Reports';
 import Notifications from '../pages/Notifications';
@@ -28,7 +28,7 @@ export default function AppRoutes() {
         <Route path="/assets" element={<Assets />} />
         <Route path="/allocation" element={<Allocation />} />
         <Route path="/booking" element={<Booking />} />
-        <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/maintainance" element={<Maintainance />} />
         <Route path="/audit" element={<Audit />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/notifications" element={<Notifications />} />
