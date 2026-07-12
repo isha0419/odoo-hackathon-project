@@ -14,8 +14,8 @@ from jose import JWTError
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models.user import User
 from app.models.enums import ActiveStatus, UserRole
+from app.models.user import User
 from app.security import decode_access_token
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -36,8 +36,8 @@ async def get_current_user(
         user_id: str | None = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+    except JWTError as e:
+        raise credentials_exception from e
 
     user = db.query(User).filter(User.id == uuid.UUID(user_id)).first()
     if user is None or user.status != ActiveStatus.ACTIVE:
@@ -69,14 +69,23 @@ def require_same_department(department_id: uuid.UUID):
     """
 
     async def _check(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role in (UserRole.ADMIN, UserRole.ASSET_MANAGER):
-            return current_user
-        if current_user.role == UserRole.DEPARTMENT_HEAD:
-            if current_user.department_id != department_id:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Access restricted to own department",
-                )
+        check_department_scope(current_user, department_id)
         return current_user
 
     return _check
+
+
+def check_department_scope(current_user: User, department_id: uuid.UUID | None):
+    """
+    Synchronous helper to enforce department isolation for DEPARTMENT_HEAD role.
+    Raises 403 if they attempt to act on another department's resources.
+    """
+    if current_user.role in (UserRole.ADMIN, UserRole.ASSET_MANAGER):
+        return
+    if current_user.role == UserRole.DEPARTMENT_HEAD and (
+        department_id is None or current_user.department_id != department_id
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted to own department",
+        )

@@ -4,16 +4,17 @@ Revision ID: 001_initial_schema
 Revises: None
 Create Date: 2026-07-12
 """
-from typing import Sequence, Union
 
-from alembic import op
+from collections.abc import Sequence
+
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID, JSONB, TSTZRANGE, ENUM
+from alembic import op
+from sqlalchemy.dialects.postgresql import ENUM, JSONB, TSTZRANGE, UUID
 
 revision: str = "001_initial_schema"
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 # ── Enum type names & values (frozen per design.md Section 3.1) ───────────
 ENUMS = {
@@ -29,9 +30,15 @@ ENUMS = {
     "audit_cycle_status": ("OPEN", "CLOSED"),
     "audit_verification": ("PENDING", "VERIFIED", "MISSING", "DAMAGED"),
     "notification_type": (
-        "ASSET_ASSIGNED", "MAINTENANCE_APPROVED", "MAINTENANCE_REJECTED",
-        "BOOKING_CONFIRMED", "BOOKING_CANCELLED", "BOOKING_REMINDER",
-        "TRANSFER_APPROVED", "OVERDUE_RETURN", "AUDIT_DISCREPANCY",
+        "ASSET_ASSIGNED",
+        "MAINTENANCE_APPROVED",
+        "MAINTENANCE_REJECTED",
+        "BOOKING_CONFIRMED",
+        "BOOKING_CANCELLED",
+        "BOOKING_REMINDER",
+        "TRANSFER_APPROVED",
+        "OVERDUE_RETURN",
+        "AUDIT_DISCREPANCY",
     ),
 }
 
@@ -131,8 +138,7 @@ def upgrade() -> None:
 
     # ── Crown Jewel #1: partial unique index ──────────────────────────────
     op.execute(
-        "CREATE UNIQUE INDEX one_active_allocation_per_asset "
-        "ON allocations (asset_id) WHERE returned_at IS NULL"
+        "CREATE UNIQUE INDEX one_active_allocation_per_asset ON allocations (asset_id) WHERE returned_at IS NULL"
     )
 
     # 6. transfer_requests

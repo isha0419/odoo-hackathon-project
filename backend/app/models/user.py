@@ -14,9 +14,7 @@ from app.models.enums import ActiveStatus, UserRole
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     name: Mapped[str] = mapped_column(Text, nullable=False)
     email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)  # citext at DB level
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
@@ -29,12 +27,8 @@ class User(Base):
     status: Mapped[ActiveStatus] = mapped_column(
         default=ActiveStatus.ACTIVE, server_default=ActiveStatus.ACTIVE.value, nullable=False
     )
-    created_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), onupdate=func.now(), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False)
 
     # Relationships
     department = relationship("Department", foreign_keys=[department_id], back_populates="members")

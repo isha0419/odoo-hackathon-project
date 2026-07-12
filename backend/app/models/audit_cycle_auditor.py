@@ -15,9 +15,7 @@ class AuditCycleAuditor(Base):
     audit_cycle_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("audit_cycles.id"), primary_key=True
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True)
 
     # Relationships
     audit_cycle = relationship("AuditCycle", back_populates="auditors")

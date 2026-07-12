@@ -5,12 +5,17 @@ Creates the root admin user and seed departments/categories.
 Run via:  python -m app.seed.initial_seed
 """
 
+import logging
+
 from app.db import SessionLocal
-from app.models.user import User
-from app.models.department import Department
 from app.models.asset_category import AssetCategory
-from app.models.enums import UserRole, ActiveStatus
+from app.models.department import Department
+from app.models.enums import ActiveStatus, UserRole
+from app.models.user import User
 from app.security import hash_password
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 def seed():
@@ -30,9 +35,9 @@ def seed():
             db.add(admin)
             db.commit()
             db.refresh(admin)
-            print(f"[SEED] Admin user created: {admin.id}")
+            logger.info(f"[SEED] Admin user created: {admin.id}")
         else:
-            print("[SEED] Admin user already exists — skipping")
+            logger.info("[SEED] Admin user already exists — skipping")
 
         # ── Seed departments ──────────────────────────────────────────────
         seed_depts = ["Engineering", "Operations", "Finance", "Human Resources"]
@@ -41,7 +46,7 @@ def seed():
             if not existing:
                 dept = Department(name=dept_name)
                 db.add(dept)
-                print(f"[SEED] Department created: {dept_name}")
+                logger.info(f"[SEED] Department created: {dept_name}")
         db.commit()
 
         # ── Seed categories ───────────────────────────────────────────────
@@ -57,10 +62,10 @@ def seed():
             if not existing:
                 cat = AssetCategory(name=cat_name, custom_fields=fields)
                 db.add(cat)
-                print(f"[SEED] Category created: {cat_name}")
+                logger.info(f"[SEED] Category created: {cat_name}")
         db.commit()
 
-        print("[SEED] Done ✓")
+        logger.info("[SEED] Done ✓")
     finally:
         db.close()
 

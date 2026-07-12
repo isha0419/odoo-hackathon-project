@@ -18,8 +18,8 @@ os.environ.setdefault("DATABASE_URL", "postgresql://assetflow:assetflow_ci@local
 os.environ.setdefault("JWT_SECRET", "test-secret")
 os.environ.setdefault("JWT_EXPIRE_HOURS", "8")
 
-from app.db import Base, get_db  # noqa: E402
-from app.main import app  # noqa: E402
+from app.db import Base, get_db
+from app.main import app
 
 TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 

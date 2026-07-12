@@ -1,11 +1,10 @@
 # AssetFlow — Team Task Status
 
-> Last updated: 2026-07-12 11:20 IST
-> Stage assignment source of truth: `design.md` Section 12
+> Last updated: 2026-07-12 11:00 IST
 
 ---
 
-## 🅰️ Omm — Lead / Backend Integration (Track A)
+## 🅰️ Omm (Lead / Backend Integration)
 
 - [x] Stage 0 — Foundation & Skeleton
   - [x] Docker Compose + Postgres 16 + config
@@ -13,36 +12,28 @@
   - [x] Alembic migration (tables, CJ constraints, sequences)
   - [x] `security.py`, `deps.py`, shared service stubs
   - [x] 12 router stubs registered in `main.py`
-  - [x] Dockerfile + root `docker-compose.yml` (api + postgres)
 - [x] Stage 1 — Auth + Organization
   - [x] Auth: signup, login, /me, forgot-password
   - [x] Org: departments CRUD, categories CRUD
   - [x] Employee directory + admin-only role promotion
   - [x] Seed script (admin user, 4 depts, 5 categories)
   - [x] All gate tests passed
-- [ ] Stage 4 — Integration, Final Seed & Polish
-  - [ ] Full demo seed (Section 13 spec: Field Ops hierarchy, Spaces, etc.)
-  - [ ] Cross-track integration testing
-  - [ ] Final merge coordination
+- [ ] Stage 2A — Asset Registry + Allocation + Transfer
+- [ ] Integration merges & final wiring
 
 ---
 
-## 🅱️ Satya — Backend Track B
+## 🅱️ Satya (Backend Track 2)
 
-- [ ] Stage 2 — Asset Registry + Allocation + Transfer *(Crown Jewel #1)*
-  - [ ] Asset CRUD (register, tag, lifecycle transitions)
-  - [ ] Allocation service (assign/return, CJ #1 enforcement)
-  - [ ] Transfer request workflow (pending → approved → completed)
-  - [ ] `GET /assets`, `POST /allocations`, `POST /transfers` endpoints
-- [ ] Stage 3 — Booking + Maintenance + Audit + Reports
-  - [ ] Booking service + calendar endpoint *(Crown Jewel #2)*
-  - [ ] Maintenance service (Kanban: open → in_progress → resolved)
-  - [ ] Audit cycle service + discrepancy reports
+- [X] Stage 2B — Booking + Maintenance + Audit
+  - [x] Booking service + calendar endpoint
+  - [ ] Maintenance service + kanban transitions
+  - [ ] Audit cycle service + discrepancy report
   - [ ] Reports & Dashboard KPI endpoints
 
 ---
 
-## 🅲 Yash — Frontend Track C
+## 🅲 Yash (Frontend Track 1)
 
 - [ ] Stage 3C — Core UI Pages
   - [ ] Auth pages (Login / Signup)
@@ -53,7 +44,7 @@
 
 ---
 
-## 🅳 Isha — Frontend Track D
+## 🅳 Isha (Frontend Track 2)
 
 - [ ] Stage 3D — Feature UI Pages
   - [ ] Booking Calendar view
@@ -61,10 +52,3 @@
   - [ ] Audit Cycle wizard
   - [ ] Reports & Charts
   - [ ] Dashboard KPIs
-
----
-
-> **Notes**
-> - Stages 0+1 pushed directly to `main` as one-time bootstrap — **all further work via PR**.
-> - `seed/initial_seed.py` is a dev bootstrap only; final demo seed per Section 13 is a Stage 4 deliverable.
-> - Backend `docker-compose.yaml` (under `backend/`) is DB-only for local dev; root `docker-compose.yml` boots full stack.

@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 
 from app.models.enums import ActiveStatus, UserRole
 
-
 # ── Departments ───────────────────────────────────────────────────────────────
+
 
 class DepartmentCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
@@ -39,6 +39,7 @@ class DepartmentOut(BaseModel):
 
 # ── Categories ────────────────────────────────────────────────────────────────
 
+
 class CategoryCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     custom_fields: dict = Field(default_factory=dict)
@@ -61,8 +62,10 @@ class CategoryOut(BaseModel):
 
 # ── Employees ─────────────────────────────────────────────────────────────────
 
+
 class EmployeeUpdate(BaseModel):
     """Admin-only: the ONLY place roles change."""
+
     role: UserRole | None = None
     department_id: uuid.UUID | None = None
     status: ActiveStatus | None = None

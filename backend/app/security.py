@@ -5,7 +5,7 @@ Uses bcrypt directly (passlib has compatibility issues with newer bcrypt)
 and python-jose for JWT.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import bcrypt
 from jose import JWTError, jwt
@@ -30,9 +30,7 @@ def create_access_token(
     expires_hours: int | None = None,
 ) -> str:
     """Create a JWT access token with standard claims."""
-    expire = datetime.now(timezone.utc) + timedelta(
-        hours=expires_hours or settings.jwt_expire_hours
-    )
+    expire = datetime.now(UTC) + timedelta(hours=expires_hours or settings.jwt_expire_hours)
     payload = {
         "sub": sub,
         "role": role,

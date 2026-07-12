@@ -7,19 +7,19 @@ Values are frozen per design.md Section 3.1 — do NOT modify.
 import enum
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     ADMIN = "ADMIN"
     ASSET_MANAGER = "ASSET_MANAGER"
     DEPARTMENT_HEAD = "DEPARTMENT_HEAD"
     EMPLOYEE = "EMPLOYEE"
 
 
-class ActiveStatus(str, enum.Enum):
+class ActiveStatus(enum.StrEnum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
 
 
-class AssetStatus(str, enum.Enum):
+class AssetStatus(enum.StrEnum):
     AVAILABLE = "AVAILABLE"
     ALLOCATED = "ALLOCATED"
     RESERVED = "RESERVED"
@@ -29,33 +29,33 @@ class AssetStatus(str, enum.Enum):
     DISPOSED = "DISPOSED"
 
 
-class AssetCondition(str, enum.Enum):
+class AssetCondition(enum.StrEnum):
     NEW = "NEW"
     GOOD = "GOOD"
     FAIR = "FAIR"
     POOR = "POOR"
 
 
-class AllocationStatus(str, enum.Enum):
+class AllocationStatus(enum.StrEnum):
     ACTIVE = "ACTIVE"
     RETURNED = "RETURNED"
 
 
-class TransferStatus(str, enum.Enum):
+class TransferStatus(enum.StrEnum):
     REQUESTED = "REQUESTED"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
     COMPLETED = "COMPLETED"
 
 
-class BookingStatus(str, enum.Enum):
+class BookingStatus(enum.StrEnum):
     UPCOMING = "UPCOMING"
     ONGOING = "ONGOING"
     COMPLETED = "COMPLETED"
     CANCELLED = "CANCELLED"
 
 
-class MaintenanceStatus(str, enum.Enum):
+class MaintenanceStatus(enum.StrEnum):
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
@@ -64,26 +64,26 @@ class MaintenanceStatus(str, enum.Enum):
     RESOLVED = "RESOLVED"
 
 
-class MaintenancePriority(str, enum.Enum):
+class MaintenancePriority(enum.StrEnum):
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
     CRITICAL = "CRITICAL"
 
 
-class AuditCycleStatus(str, enum.Enum):
+class AuditCycleStatus(enum.StrEnum):
     OPEN = "OPEN"
     CLOSED = "CLOSED"
 
 
-class AuditVerification(str, enum.Enum):
+class AuditVerification(enum.StrEnum):
     PENDING = "PENDING"
     VERIFIED = "VERIFIED"
     MISSING = "MISSING"
     DAMAGED = "DAMAGED"
 
 
-class NotificationType(str, enum.Enum):
+class NotificationType(enum.StrEnum):
     ASSET_ASSIGNED = "ASSET_ASSIGNED"
     MAINTENANCE_APPROVED = "MAINTENANCE_APPROVED"
     MAINTENANCE_REJECTED = "MAINTENANCE_REJECTED"
@@ -91,5 +91,6 @@ class NotificationType(str, enum.Enum):
     BOOKING_CANCELLED = "BOOKING_CANCELLED"
     BOOKING_REMINDER = "BOOKING_REMINDER"
     TRANSFER_APPROVED = "TRANSFER_APPROVED"
+    TRANSFER_REJECTED = "TRANSFER_REJECTED"
     OVERDUE_RETURN = "OVERDUE_RETURN"
     AUDIT_DISCREPANCY = "AUDIT_DISCREPANCY"

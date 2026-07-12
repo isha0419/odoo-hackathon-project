@@ -10,6 +10,7 @@ from app.models.enums import ActiveStatus, UserRole
 
 class SignupRequest(BaseModel):
     """Signup — NO role field; always creates EMPLOYEE."""
+
     name: str = Field(..., min_length=1, max_length=200)
     email: EmailStr
     password: str = Field(..., min_length=6)
@@ -26,6 +27,7 @@ class ForgotPasswordRequest(BaseModel):
 
 class UserOut(BaseModel):
     """Public user representation."""
+
     id: uuid.UUID
     name: str
     email: str

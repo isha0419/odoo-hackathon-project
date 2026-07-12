@@ -442,15 +442,15 @@ Wire up all endpoints from Section 11 (Assets, Allocation & Transfer):
 
 ### Stage 2 — Gate Checklist
 
-- [ ] Asset registration with auto-tag sequence
-- [ ] Full search/filter working
-- [ ] **Crown Jewel #1**: Double-allocation blocked at BOTH service and DB level
-- [ ] 409 response matches Section 6 JSON format exactly
-- [ ] Return flow: asset→AVAILABLE, allocation→RETURNED
-- [ ] Transfer: request→approve (atomic re-alloc) or reject
-- [ ] Overdue allocations flagged correctly
-- [ ] All activity logged, notifications sent
-- [ ] All guards match Section 8.1
+- [x] Asset registration with auto-tag sequence
+- [x] Full search/filter working
+- [x] **Crown Jewel #1**: Double-allocation blocked at BOTH service and DB level
+- [x] 409 response matches Section 6 JSON format exactly
+- [x] Return flow: asset→AVAILABLE, allocation→RETURNED
+- [x] Transfer: request→approve (atomic re-alloc) or reject
+- [x] Overdue allocations flagged correctly
+- [x] All activity logged, notifications sent
+- [x] All guards match Section 8.1
 
 ---
 
