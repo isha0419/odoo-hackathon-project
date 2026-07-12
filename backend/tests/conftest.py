@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 # ── Ensure test config is loaded before anything imports app ──────────────────
-os.environ.setdefault("DATABASE_URL", "postgresql://assetflow:assetflow_ci@localhost:5432/assetflow_test")
+os.environ.setdefault("DATABASE_URL", "postgresql://assetflow:assetflow@localhost:5432/assetflow_test")
 os.environ.setdefault("JWT_SECRET", "test-secret")
 os.environ.setdefault("JWT_EXPIRE_HOURS", "8")
 
@@ -36,6 +36,7 @@ def _setup_database():
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist;"))
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS citext;"))
+        conn.execute(text("CREATE SEQUENCE IF NOT EXISTS asset_tag_seq START 1000;"))
     Base.metadata.create_all(bind=engine)
     yield
     # Base.metadata.drop_all(bind=engine)

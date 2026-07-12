@@ -63,9 +63,9 @@ class AssetOut(BaseModel):
 class AllocationBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
-    department_id: uuid.UUID
-    assigned_date: datetime
-    returned_date: datetime | None
+    holder_department_id: uuid.UUID | None
+    allocated_at: datetime
+    returned_at: datetime | None
 
 class MaintenanceRequestBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)

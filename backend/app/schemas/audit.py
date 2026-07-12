@@ -67,7 +67,6 @@ class AuditCycleOut(BaseModel):
     end_date: date
     status: AuditCycleStatus
     created_at: datetime
-    updated_at: datetime
 
     auditors: list[AuditCycleAuditorOut] = []
 

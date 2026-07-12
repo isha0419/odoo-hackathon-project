@@ -39,6 +39,7 @@ def create_cycle(db: Session, data: AuditCycleCreate, actor_id: uuid.UUID) -> Au
         start_date=data.start_date,
         end_date=data.end_date,
         status=AuditCycleStatus.OPEN,
+        created_by=actor_id,
     )
     db.add(cycle)
     db.flush()

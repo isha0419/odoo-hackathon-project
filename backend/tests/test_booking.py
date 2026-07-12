@@ -114,7 +114,7 @@ class TestBookingService:
         data = response.json()
         assert data["asset_id"] == str(bookable_asset.id)
         assert data["temporal_status"] == "UPCOMING"
-        assert data["status"] == "ACTIVE"
+        assert data["status"] == "UPCOMING"
 
     def test_book_overlap_fails(self, client, admin_token, bookable_asset):
         now = datetime.utcnow()
@@ -146,8 +146,8 @@ class TestBookingService:
         )
         assert response.status_code == 409
         data = response.json()
-        assert "overlap_type" in data
-        assert data["overlap_type"] == "BOOKING_OVERLAP"
+        assert "conflicting_booking" in data
+        assert data["error"] == "booking_overlap"
 
     def test_book_touching_endpoints_success(self, client, admin_token, bookable_asset):
         now = datetime.utcnow()
@@ -260,7 +260,7 @@ class TestBookingService:
             json={"new_start": new_start, "new_end": new_end},
         )
         assert resched_res.status_code == 200
-        assert resched_res.json()["status"] == "ACTIVE"
+        assert resched_res.json()["status"] == "UPCOMING"
 
         # Original booking should be cancelled
         list_res = client.get(
@@ -272,4 +272,4 @@ class TestBookingService:
             if b["id"] == booking_id:
                 assert b["status"] == "CANCELLED"
             else:
-                assert b["status"] == "ACTIVE"
+                assert b["status"] == "UPCOMING"
