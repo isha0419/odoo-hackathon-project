@@ -330,11 +330,11 @@ Deliver asset registration (auto-tag), search/filter, detail with history, alloc
 - Retire an ALLOCATED asset → rejected (invalid transition).
 
 **Acceptance Criteria:**
-- [ ] Auto-tag via Postgres sequence, format `AF-####`
-- [ ] Full search/filter on tag, serial, name, category, status, location, is_bookable
-- [ ] Asset detail includes allocation + maintenance history
-- [ ] Status transitions enforced per Section 4 state machine
-- [ ] Activity logged on register and status changes
+- [X] Auto-tag via Postgres sequence, format `AF-####`
+- [X] Full search/filter on tag, serial, name, category, status, location, is_bookable
+- [X] Asset detail includes allocation + maintenance history
+- [X] Status transitions enforced per Section 4 state machine
+- [X] Activity logged on register and status changes
 
 ---
 
@@ -378,11 +378,11 @@ Deliver asset registration (auto-tag), search/filter, detail with history, alloc
 - Concurrent double-allocation attempt → DB constraint catches it even if service check is bypassed.
 
 **Acceptance Criteria:**
-- [ ] Double-allocation returns 409 with exact Section 6 JSON body
-- [ ] Allocation creates ASSET_ASSIGNED notification
-- [ ] Return sets asset AVAILABLE, allocation RETURNED
-- [ ] Overdue filter works correctly
-- [ ] Both DB constraint AND service pre-check enforce the rule
+- [X] Double-allocation returns 409 with exact Section 6 JSON body
+- [X] Allocation creates ASSET_ASSIGNED notification
+- [X] Return sets asset AVAILABLE, allocation RETURNED
+- [X] Overdue filter works correctly
+- [X] Both DB constraint AND service pre-check enforce the rule
 
 ---
 
@@ -407,10 +407,10 @@ Deliver asset registration (auto-tag), search/filter, detail with history, alloc
 - Reject → REJECTED, no allocation changes.
 
 **Acceptance Criteria:**
-- [ ] Transfer only for currently-allocated assets
-- [ ] Approve atomically re-allocates (close old + open new in one tx)
-- [ ] Both parties notified on approval
-- [ ] Dept Head can only approve within own department
+- [X] Transfer only for currently-allocated assets
+- [X] Approve atomically re-allocates (close old + open new in one tx)
+- [X] Both parties notified on approval
+- [X] Dept Head can only approve within own department
 
 ---
 
@@ -435,22 +435,22 @@ Wire up all endpoints from Section 11 (Assets, Allocation & Transfer):
 | POST | `/transfers/{id}/reject` | asset_mgr+ / head(dept) |
 
 **Acceptance Criteria:**
-- [ ] All 11 endpoints match Section 11
-- [ ] Correct role guards per Section 8.1
+- [X] All 11 endpoints match Section 11
+- [X] Correct role guards per Section 8.1
 
 ---
 
 ### Stage 2 — Gate Checklist
 
-- [ ] Asset registration with auto-tag sequence
-- [ ] Full search/filter working
-- [ ] **Crown Jewel #1**: Double-allocation blocked at BOTH service and DB level
-- [ ] 409 response matches Section 6 JSON format exactly
-- [ ] Return flow: asset→AVAILABLE, allocation→RETURNED
-- [ ] Transfer: request→approve (atomic re-alloc) or reject
-- [ ] Overdue allocations flagged correctly
-- [ ] All activity logged, notifications sent
-- [ ] All guards match Section 8.1
+- [X] Asset registration with auto-tag sequence
+- [X] Full search/filter working
+- [X] **Crown Jewel #1**: Double-allocation blocked at BOTH service and DB level
+- [X] 409 response matches Section 6 JSON format exactly
+- [X] Return flow: asset→AVAILABLE, allocation→RETURNED
+- [X] Transfer: request→approve (atomic re-alloc) or reject
+- [X] Overdue allocations flagged correctly
+- [X] All activity logged, notifications sent
+- [X] All guards match Section 8.1
 
 ---
 
@@ -513,14 +513,14 @@ Deliver calendar read with derived temporal status, booking create with overlap 
 - List by date returns correct derived temporal statuses.
 
 **Acceptance Criteria:**
-- [ ] Overlap blocked at BOTH service and DB level
-- [ ] 409 response matches Section 7 JSON format exactly
-- [ ] Half-open range semantics: `[start, end)` — touching endpoints allowed
-- [ ] Non-bookable assets rejected with 422
-- [ ] Cancel frees the exclusion constraint
-- [ ] Reschedule is atomic cancel-then-create
-- [ ] Temporal status derived correctly at read time
-- [ ] Activity logged and notifications sent
+- [X] Overlap blocked at BOTH service and DB level
+- [X] 409 response matches Section 7 JSON format exactly
+- [X] Half-open range semantics: `[start, end)` — touching endpoints allowed
+- [X] Non-bookable assets rejected with 422
+- [X] Cancel frees the exclusion constraint
+- [X] Reschedule is atomic cancel-then-create
+- [X] Temporal status derived correctly at read time
+- [X] Activity logged and notifications sent
 
 ---
 
@@ -557,13 +557,13 @@ Deliver calendar read with derived temporal status, booking create with overlap 
 - Kanban list returns requests grouped by status.
 
 **Acceptance Criteria:**
-- [ ] All 6 maintenance statuses reachable via valid transitions only
-- [ ] APPROVED drives asset to UNDER_MAINTENANCE
-- [ ] RESOLVED drives asset back to AVAILABLE
-- [ ] Invalid transitions rejected
-- [ ] Kanban-style list groupable by status
-- [ ] Activity logged at each transition
-- [ ] Notifications sent on APPROVED and REJECTED
+- [X] All 6 maintenance statuses reachable via valid transitions only
+- [X] APPROVED drives asset to UNDER_MAINTENANCE
+- [X] RESOLVED drives asset back to AVAILABLE
+- [X] Invalid transitions rejected
+- [X] Kanban-style list groupable by status
+- [X] Activity logged at each transition
+- [X] Notifications sent on APPROVED and REJECTED
 
 ---
 
@@ -584,23 +584,23 @@ Wire up all endpoints from Section 11 (Bookings, Maintenance):
 | POST | `/maintenance/{id}/transition` | asset_mgr+ |
 
 **Acceptance Criteria:**
-- [ ] All 7 endpoints match Section 11
-- [ ] Correct role guards per Section 8.1
+- [X] All 7 endpoints match Section 11
+- [X] Correct role guards per Section 8.1
 
 ---
 
 ### Stage 3 — Gate Checklist
 
-- [ ] **Crown Jewel #2**: Booking overlap blocked at BOTH service and DB level
-- [ ] 409 response matches Section 7 JSON format exactly
-- [ ] Half-open ranges work correctly (touching endpoints allowed)
-- [ ] Calendar read with derived temporal statuses
-- [ ] Cancel/reschedule functional
-- [ ] Maintenance state machine: all valid transitions work, invalid ones rejected
-- [ ] Asset status driven by maintenance (UNDER_MAINTENANCE ↔ AVAILABLE)
-- [ ] Kanban list groupable by status
-- [ ] All activity logged, notifications sent
-- [ ] All guards match Section 8.1
+- [X] **Crown Jewel #2**: Booking overlap blocked at BOTH service and DB level
+- [X] 409 response matches Section 7 JSON format exactly
+- [X] Half-open ranges work correctly (touching endpoints allowed)
+- [X] Calendar read with derived temporal statuses
+- [X] Cancel/reschedule functional
+- [X] Maintenance state machine: all valid transitions work, invalid ones rejected
+- [X] Asset status driven by maintenance (UNDER_MAINTENANCE ↔ AVAILABLE)
+- [X] Kanban list groupable by status
+- [X] All activity logged, notifications sent
+- [X] All guards match Section 8.1
 
 ---
 
@@ -640,9 +640,9 @@ Deliver audit cycle management (create/assign auditors/mark/close→discrepancy 
 - `sync_derived()` is idempotent — calling twice doesn't duplicate.
 
 **Acceptance Criteria:**
-- [ ] Stub bodies replaced with real implementations
-- [ ] Signatures unchanged (no breaking changes for other tracks)
-- [ ] `sync_derived()` is idempotent
+- [X] Stub bodies replaced with real implementations
+- [X] Signatures unchanged (no breaking changes for other tracks)
+- [X] `sync_derived()` is idempotent
 
 ---
 
@@ -674,11 +674,11 @@ Deliver audit cycle management (create/assign auditors/mark/close→discrepancy 
 - Get discrepancies → returns MISSING + DAMAGED items.
 
 **Acceptance Criteria:**
-- [ ] Cycle creation snapshots in-scope assets as audit_items
-- [ ] Only assigned auditors can mark items
-- [ ] Closing cycle: MISSING → asset LOST, discrepancy report generated
-- [ ] AUDIT_DISCREPANCY notifications created on close
-- [ ] Discrepancies endpoint returns flagged items
+- [X] Cycle creation snapshots in-scope assets as audit_items
+- [X] Only assigned auditors can mark items
+- [X] Closing cycle: MISSING → asset LOST, discrepancy report generated
+- [X] AUDIT_DISCREPANCY notifications created on close
+- [X] Discrepancies endpoint returns flagged items
 
 ---
 
@@ -711,9 +711,9 @@ All report endpoints from Section 11 (Reports):
 - CSV export returns valid CSV with correct headers.
 
 **Acceptance Criteria:**
-- [ ] All 7 report endpoints return correct aggregations
-- [ ] CSV export works for each report type
-- [ ] Reports scoped by viewer's role/department
+- [X] All 7 report endpoints return correct aggregations
+- [X] CSV export works for each report type
+- [X] Reports scoped by viewer's role/department
 
 ---
 
@@ -741,10 +741,10 @@ Scope all counts by viewer's permissions (admin/mgr sees all, dept head sees own
 - `sync_derived()` is called before response.
 
 **Acceptance Criteria:**
-- [ ] All KPI fields from Section 10 present
-- [ ] Overdue returns highlighted/separate
-- [ ] `sync_derived()` called at top of handler
-- [ ] Scoped by viewer's role
+- [X] All KPI fields from Section 10 present
+- [X] Overdue returns highlighted/separate
+- [X] `sync_derived()` called at top of handler
+- [X] Scoped by viewer's role
 
 ---
 
@@ -762,9 +762,9 @@ Scope all counts by viewer's permissions (admin/mgr sees all, dept head sees own
 **Activity logs**: mgr+ sees all, dept head sees own dept, employee sees own actions.
 
 **Acceptance Criteria:**
-- [ ] Notifications list calls `sync_derived()` first
-- [ ] Mark-as-read works
-- [ ] Activity logs scoped by role
+- [X] Notifications list calls `sync_derived()` first
+- [X] Mark-as-read works
+- [X] Activity logs scoped by role
 
 ---
 
@@ -793,22 +793,22 @@ Wire up remaining endpoints from Section 11:
 | GET | `/dashboard` | user |
 
 **Acceptance Criteria:**
-- [ ] All 15 endpoints match Section 11
-- [ ] Correct role guards per Section 8.1
+- [X] All 15 endpoints match Section 11
+- [X] Correct role guards per Section 8.1
 
 ---
 
 ### Stage 4 — Gate Checklist
 
-- [ ] Activity log helper writes rows correctly
-- [ ] Notification helper creates notifications correctly
-- [ ] `sync_derived()` generates OVERDUE_RETURN and BOOKING_REMINDER idempotently
-- [ ] Audit cycle: create→snapshot, assign auditors, mark items, close→LOST+discrepancies
-- [ ] All 7 report endpoints return correct data + CSV export
-- [ ] Dashboard returns all KPIs, calls sync_derived first
-- [ ] Notifications list with sync, mark-read
-- [ ] Activity logs scoped by role
-- [ ] All guards match Section 8.1
+- [X] Activity log helper writes rows correctly
+- [X] Notification helper creates notifications correctly
+- [X] `sync_derived()` generates OVERDUE_RETURN and BOOKING_REMINDER idempotently
+- [X] Audit cycle: create→snapshot, assign auditors, mark items, close→LOST+discrepancies
+- [X] All 7 report endpoints return correct data + CSV export
+- [X] Dashboard returns all KPIs, calls sync_derived first
+- [X] Notifications list with sync, mark-read
+- [X] Activity logs scoped by role
+- [X] All guards match Section 8.1
 
 ---
 
