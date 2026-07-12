@@ -109,7 +109,6 @@ class TestBookingService:
                 "end": end,
             },
         )
-        print("422 RESPONSE:", response.text)
         assert response.status_code == 200
         data = response.json()
         assert data["asset_id"] == str(bookable_asset.id)

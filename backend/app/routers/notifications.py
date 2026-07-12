@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.deps import get_current_user
-from app.models.notification import Notification
 from app.models.enums import NotificationType
+from app.models.notification import Notification
 from app.models.user import User
 from app.schemas.notifications import NotificationOut
 from app.services import notifications_service
@@ -27,10 +27,7 @@ def list_notifications(
 ):
     notifications_service.sync_derived(db)
 
-    stmt = (
-        select(Notification)
-        .where(Notification.recipient_user_id == current_user.id)
-    )
+    stmt = select(Notification).where(Notification.recipient_user_id == current_user.id)
     if type:
         stmt = stmt.where(Notification.type == type)
 

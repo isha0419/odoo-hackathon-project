@@ -1,6 +1,6 @@
 """AssetFlow — Dashboard Service (Track D)."""
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -33,7 +33,7 @@ def get_dashboard_kpis(db: Session, user: User) -> DashboardKPIs:
     dept_id = user.department_id
 
     today = date.today()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # 1. Assets Available & Allocated (Global)
     assets_available = db.scalar(select(func.count(Asset.id)).where(Asset.status == AssetStatus.AVAILABLE)) or 0

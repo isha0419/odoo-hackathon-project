@@ -77,13 +77,16 @@ def get_most_used(db: Session, dept_id: uuid.UUID | None = None) -> list[MostUse
 
 def get_idle(db: Session, dept_id: uuid.UUID | None = None) -> list[IdleReport]:
     # Assets with no active allocations
-    stmt = select(Asset).options(
-        joinedload(Asset.allocations),
-        joinedload(Asset.bookings)
-    ).where(~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE)).limit(20)
+    stmt = (
+        select(Asset)
+        .options(joinedload(Asset.allocations), joinedload(Asset.bookings))
+        .where(~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE))
+        .limit(20)
+    )
 
     results = db.scalars(stmt).unique().all()
     from datetime import date
+
     today = date.today()
     reports = []
 

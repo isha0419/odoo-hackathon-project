@@ -33,6 +33,7 @@ def _setup_database():
     """Create all tables at start, drop at end."""
     with engine.begin() as conn:
         from sqlalchemy import text
+
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist;"))
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS citext;"))
@@ -42,6 +43,7 @@ def _setup_database():
     # Base.metadata.drop_all(bind=engine)
     with engine.begin() as conn:
         from sqlalchemy import text
+
         conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"))
         conn.execute(text("GRANT ALL ON SCHEMA public TO assetflow;"))
 
