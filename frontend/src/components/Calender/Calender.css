@@ -1,0 +1,57 @@
+.calendar {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.calendar__row {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.calendar__row:last-child {
+  border-bottom: none;
+}
+
+.calendar__time {
+  width: 64px;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.calendar__track {
+  flex: 1;
+  min-height: 44px;
+  display: flex;
+}
+
+.calendar__slot {
+  flex: 1;
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-primary);
+  transition: background var(--transition-fast);
+}
+
+.calendar__slot--free:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.calendar__slot--booked {
+  background: var(--status-blue-bg);
+  color: var(--status-blue);
+  cursor: default;
+}
+
+.calendar__slot--conflict {
+  background: var(--status-red-bg);
+  color: var(--status-red);
+  border: 1px dashed rgba(229, 72, 77, 0.5);
+  cursor: default;
+}

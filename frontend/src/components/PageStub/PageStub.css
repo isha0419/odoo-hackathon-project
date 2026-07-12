@@ -1,0 +1,26 @@
+.page-stub {
+  max-width: 640px;
+}
+
+.page-stub__eyebrow {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.page-stub h2 {
+  margin-bottom: 14px;
+}
+
+.page-stub__list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

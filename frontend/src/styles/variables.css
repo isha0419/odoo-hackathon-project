@@ -1,0 +1,44 @@
+:root {
+  /* ---- Surfaces ---- */
+  --bg-root: #0d0d10;
+  --bg-elevated: #101013;
+  --bg-card: transparent;
+  --border-subtle: rgba(255, 255, 255, 0.35);
+  --border-strong: rgba(255, 255, 255, 0.55);
+
+  /* ---- Text ---- */
+  --text-primary: #f2f0e8;
+  --text-secondary: #cfcdc4;
+  --text-muted: #8a887f;
+
+  /* ---- Brand ---- */
+  --brand: #5b7cfa;
+  --brand-dim: rgba(91, 124, 250, 0.16);
+
+  /* ---- Status colors ---- */
+  --status-green: #35c47c;
+  --status-green-bg: rgba(53, 196, 124, 0.14);
+  --status-red: #e5484d;
+  --status-red-bg: rgba(229, 72, 77, 0.14);
+  --status-orange: #f0a63c;
+  --status-orange-bg: rgba(240, 166, 60, 0.14);
+  --status-blue: #4c9be8;
+  --status-blue-bg: rgba(76, 155, 232, 0.14);
+
+  /* ---- Radius / shadow / motion ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+
+  /* ---- Type ---- */
+  --font-display: 'Patrick Hand', 'Inter', sans-serif;
+  --font-body: 'Patrick Hand', 'Inter', sans-serif;
+
+  /* ---- Layout ---- */
+  --sidebar-width: 232px;
+  --sidebar-width-collapsed: 72px;
+  --navbar-height: 64px;
+}

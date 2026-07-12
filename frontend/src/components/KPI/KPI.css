@@ -1,0 +1,37 @@
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 720px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kpi__label {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.kpi__value {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.kpi__value--red {
+  color: var(--status-red);
+}
+.kpi__value--green {
+  color: var(--status-green);
+}

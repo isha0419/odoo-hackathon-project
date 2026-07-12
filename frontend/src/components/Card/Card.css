@@ -1,0 +1,14 @@
+.card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-base);
+}
+
+.card--padded {
+  padding: 20px;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+}
