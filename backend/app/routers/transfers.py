@@ -1,7 +1,6 @@
 """AssetFlow — Transfers Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -25,15 +24,13 @@ def request_transfer(
     return transfer_service.create(db, data, current_user.id)
 
 
-@router.get("", response_model=List[TransferOut])
+@router.get("", response_model=list[TransferOut])
 def list_transfers(
-    status: Optional[TransferStatus] = None,
+    status: TransferStatus | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
 ):
     # Department Head only sees their department's transfers
     dept_id = None
@@ -53,9 +50,7 @@ def list_transfers(
 def approve_transfer(
     transfer_id: uuid.UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
 ):
     return transfer_service.approve(db, transfer_id, current_user.id)
 
@@ -64,8 +59,6 @@ def approve_transfer(
 def reject_transfer(
     transfer_id: uuid.UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
 ):
     return transfer_service.reject(db, transfer_id, current_user.id)

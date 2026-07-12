@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, ForeignKey, Text, func, Index, text
+from sqlalchemy import Date, ForeignKey, Index, Text, func, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,24 +22,14 @@ class Allocation(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
-    )
-    asset_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False
-    )
-    holder_user_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    asset_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
+    holder_user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     holder_department_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("departments.id"), nullable=True
     )
-    allocated_by: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
-    )
-    allocated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), nullable=False
-    )
+    allocated_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    allocated_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
     expected_return_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     returned_at: Mapped[datetime | None] = mapped_column(nullable=True)
     return_condition_notes: Mapped[str | None] = mapped_column(Text, nullable=True)

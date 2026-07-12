@@ -9,8 +9,8 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from app.models.notification import Notification
 from app.models.enums import NotificationType
+from app.models.notification import Notification
 
 
 def create(
@@ -40,7 +40,9 @@ def sync_derived(db: Session) -> None:
     Idempotent.
     """
     from datetime import date, datetime, timedelta
+
     from sqlalchemy import select
+
     from app.models.allocation import Allocation
     from app.models.booking import Booking
     from app.models.enums import AllocationStatus, BookingStatus
@@ -51,18 +53,14 @@ def sync_derived(db: Session) -> None:
 
     # 1. Overdue Allocations
     overdue_allocs = db.scalars(
-        select(Allocation).where(
-            Allocation.status == AllocationStatus.ACTIVE,
-            Allocation.expected_return_date < today
-        )
+        select(Allocation).where(Allocation.status == AllocationStatus.ACTIVE, Allocation.expected_return_date < today)
     ).all()
 
     for alloc in overdue_allocs:
         # Check if notification exists
         existing = db.scalar(
             select(Notification).where(
-                Notification.entity_id == alloc.id,
-                Notification.type == NotificationType.OVERDUE_RETURN
+                Notification.entity_id == alloc.id, Notification.type == NotificationType.OVERDUE_RETURN
             )
         )
         if not existing and alloc.holder_user_id:
@@ -79,9 +77,7 @@ def sync_derived(db: Session) -> None:
     # Using psycopg2.extras DateTimeTZRange requires some raw SQL or just fetching and checking
     # Because time_range contains timezone aware datetimes usually.
     # To keep it simple, fetch UPCOMING bookings and check Python-side if they start within 30 mins.
-    upcoming_bookings = db.scalars(
-        select(Booking).where(Booking.status == BookingStatus.UPCOMING)
-    ).all()
+    upcoming_bookings = db.scalars(select(Booking).where(Booking.status == BookingStatus.UPCOMING)).all()
 
     for booking in upcoming_bookings:
         start_time = booking.time_range.lower if booking.time_range else None
@@ -93,12 +89,11 @@ def sync_derived(db: Session) -> None:
                 is_soon = now_aware <= start_time <= thirty_mins_aware
             else:
                 is_soon = now <= start_time <= thirty_mins_from_now
-            
+
             if is_soon:
                 existing = db.scalar(
                     select(Notification).where(
-                        Notification.entity_id == booking.id,
-                        Notification.type == NotificationType.BOOKING_REMINDER
+                        Notification.entity_id == booking.id, Notification.type == NotificationType.BOOKING_REMINDER
                     )
                 )
                 if not existing:
@@ -110,5 +105,5 @@ def sync_derived(db: Session) -> None:
                         entity_type="booking",
                         entity_id=booking.id,
                     )
-    
+
     db.commit()

@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
@@ -15,7 +14,7 @@ from app.models.enums import UserRole
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingOut
 from app.services import booking_service
-from app.services.booking_service import BookingOverlapException
+from app.services.booking_service import BookingOverlapError
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
@@ -26,9 +25,11 @@ class RescheduleRequest(BaseModel):
 
 
 def _check_booking_ownership(booking, current_user: User):
-    if current_user.role not in (UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD):
-        if booking.booked_by_user_id != current_user.id:
-            raise HTTPException(status_code=403, detail="Not authorized to modify this booking")
+    if (
+        current_user.role not in (UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
+        and booking.booked_by_user_id != current_user.id
+    ):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this booking")
 
 
 @router.post("", response_model=BookingOut)
@@ -39,7 +40,7 @@ def create_booking(
 ):
     try:
         return booking_service.create(db, data, current_user.id)
-    except BookingOverlapException as e:
+    except BookingOverlapError as e:
         return JSONResponse(status_code=409, content=e.conflict_body)
 
 
@@ -63,16 +64,16 @@ def reschedule_booking(
 ):
     booking = booking_service.get_detail(db, booking_id)
     _check_booking_ownership(booking, current_user)
-    
+
     try:
         return booking_service.reschedule(db, booking_id, data.new_start, data.new_end, current_user.id)
-    except BookingOverlapException as e:
+    except BookingOverlapError as e:
         return JSONResponse(status_code=409, content=e.conflict_body)
 
 
-@router.get("", response_model=List[BookingOut])
+@router.get("", response_model=list[BookingOut])
 def list_bookings(
-    asset_id: Optional[uuid.UUID] = None,
+    asset_id: uuid.UUID | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),

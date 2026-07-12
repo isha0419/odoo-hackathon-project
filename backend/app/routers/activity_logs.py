@@ -1,7 +1,6 @@
 """AssetFlow — Activity Logs Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -17,16 +16,16 @@ from app.schemas.activity_logs import ActivityLogOut
 router = APIRouter(prefix="/activity-logs", tags=["Activity Logs"])
 
 
-@router.get("", response_model=List[ActivityLogOut])
+@router.get("", response_model=list[ActivityLogOut])
 def list_activity_logs(
     limit: int = 50,
     offset: int = 0,
-    entity_id: Optional[uuid.UUID] = None,
+    entity_id: uuid.UUID | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     stmt = select(ActivityLog).options(joinedload(ActivityLog.actor))
-    
+
     if current_user.role == UserRole.DEPARTMENT_HEAD:
         # Dept Head sees activity by members of their dept or involving their dept
         stmt = stmt.join(User, ActivityLog.actor_user_id == User.id).where(

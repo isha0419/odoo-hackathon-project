@@ -1,8 +1,6 @@
 """AssetFlow — Dashboard Service (Track D)."""
 
-import uuid
 from datetime import date, datetime, timedelta
-from typing import Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -43,9 +41,9 @@ def get_dashboard_kpis(db: Session, user: User) -> DashboardKPIs:
 
     # 2. Maintenance Today
     maint_stmt = select(func.count(MaintenanceRequest.id)).where(
-        (func.date(MaintenanceRequest.created_at) == today) |
-        (MaintenanceRequest.status == MaintenanceStatus.IN_PROGRESS) |
-        (MaintenanceRequest.status == MaintenanceStatus.APPROVED)
+        (func.date(MaintenanceRequest.created_at) == today)
+        | (MaintenanceRequest.status == MaintenanceStatus.IN_PROGRESS)
+        | (MaintenanceRequest.status == MaintenanceStatus.APPROVED)
     )
     if not is_global:
         maint_stmt = maint_stmt.where(MaintenanceRequest.raised_by == user.id)
@@ -55,8 +53,7 @@ def get_dashboard_kpis(db: Session, user: User) -> DashboardKPIs:
     # In PostgreSQL, we can check if now is contained in time_range with @>
     # or just fetch and filter in memory if complex, but @> works for TSTZRANGE.
     booking_stmt = select(func.count(Booking.id)).where(
-        Booking.status == BookingStatus.UPCOMING,
-        Booking.time_range.op('@>')(now)
+        Booking.status == BookingStatus.UPCOMING, Booking.time_range.op("@>")(now)
     )
     if not is_global:
         if is_head and dept_id:
@@ -75,17 +72,16 @@ def get_dashboard_kpis(db: Session, user: User) -> DashboardKPIs:
 
     # 5. Upcoming & Overdue Returns
     alloc_stmt = select(Allocation).where(
-        Allocation.status == AllocationStatus.ACTIVE,
-        Allocation.expected_return_date.isnot(None)
+        Allocation.status == AllocationStatus.ACTIVE, Allocation.expected_return_date.isnot(None)
     )
     if not is_global:
         if is_head and dept_id:
             alloc_stmt = alloc_stmt.where(Allocation.holder_department_id == dept_id)
         else:
             alloc_stmt = alloc_stmt.where(Allocation.holder_user_id == user.id)
-    
+
     allocations = db.scalars(alloc_stmt).all()
-    
+
     upcoming_returns = []
     overdue_returns = []
     seven_days = today + timedelta(days=7)
@@ -101,7 +97,7 @@ def get_dashboard_kpis(db: Session, user: User) -> DashboardKPIs:
     act_stmt = select(ActivityLog).order_by(ActivityLog.created_at.desc()).limit(10)
     if not is_global:
         act_stmt = act_stmt.where(ActivityLog.actor_user_id == user.id)
-    
+
     recent_activity = db.scalars(act_stmt).all()
 
     return DashboardKPIs(

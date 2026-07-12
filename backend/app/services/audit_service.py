@@ -1,7 +1,6 @@
 """AssetFlow — Audit Service (Track D)."""
 
 import uuid
-from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
@@ -23,7 +22,7 @@ def _enrich_cycle(db: Session, cycle: AuditCycle) -> AuditCycle:
         .where(AuditItem.audit_cycle_id == cycle.id)
         .group_by(AuditItem.verification)
     ).all()
-    
+
     count_map = {row[0]: row[1] for row in counts}
     cycle.pending_count = count_map.get(AuditVerification.PENDING, 0)
     cycle.verified_count = count_map.get(AuditVerification.VERIFIED, 0)
@@ -54,9 +53,9 @@ def create_cycle(db: Session, data: AuditCycleCreate, actor_id: uuid.UUID) -> Au
     if data.scope_department_id:
         from app.models.allocation import Allocation
         from app.models.enums import AllocationStatus
+
         stmt = stmt.join(
-            Allocation,
-            (Allocation.asset_id == Asset.id) & (Allocation.status == AllocationStatus.ACTIVE)
+            Allocation, (Allocation.asset_id == Asset.id) & (Allocation.status == AllocationStatus.ACTIVE)
         ).where(Allocation.holder_department_id == data.scope_department_id)
 
     assets_in_scope = db.scalars(stmt).all()
@@ -70,7 +69,7 @@ def create_cycle(db: Session, data: AuditCycleCreate, actor_id: uuid.UUID) -> Au
             verification=AuditVerification.PENDING,
         )
         audit_items.append(item)
-    
+
     db.add_all(audit_items)
     db.commit()
     db.refresh(cycle)
@@ -86,15 +85,14 @@ def assign_auditors(db: Session, cycle_id: uuid.UUID, data: AssignAuditorsReques
         # Avoid duplicate assignment
         exists = db.scalar(
             select(AuditCycleAuditor).where(
-                AuditCycleAuditor.audit_cycle_id == cycle_id,
-                AuditCycleAuditor.user_id == user_id
+                AuditCycleAuditor.audit_cycle_id == cycle_id, AuditCycleAuditor.user_id == user_id
             )
         )
         if not exists:
             db.add(AuditCycleAuditor(audit_cycle_id=cycle_id, user_id=user_id))
-            
+
     db.commit()
-    
+
     # Reload with auditors
     cycle = db.scalar(
         select(AuditCycle)
@@ -105,19 +103,14 @@ def assign_auditors(db: Session, cycle_id: uuid.UUID, data: AssignAuditorsReques
 
 
 def mark_item(db: Session, item_id: uuid.UUID, data: AuditItemUpdate, actor_id: uuid.UUID) -> AuditItem:
-    item = db.scalar(
-        select(AuditItem)
-        .options(joinedload(AuditItem.asset))
-        .where(AuditItem.id == item_id)
-    )
+    item = db.scalar(select(AuditItem).options(joinedload(AuditItem.asset)).where(AuditItem.id == item_id))
     if not item:
         raise HTTPException(status_code=404, detail="Audit item not found")
 
     # Check if actor is an assigned auditor
     is_auditor = db.scalar(
         select(AuditCycleAuditor).where(
-            AuditCycleAuditor.audit_cycle_id == item.audit_cycle_id,
-            AuditCycleAuditor.user_id == actor_id
+            AuditCycleAuditor.audit_cycle_id == item.audit_cycle_id, AuditCycleAuditor.user_id == actor_id
         )
     )
     if not is_auditor:
@@ -164,7 +157,7 @@ def close_cycle(db: Session, cycle_id: uuid.UUID, actor_id: uuid.UUID) -> AuditC
             action="asset.lost",
             entity_type="asset",
             entity_id=asset.id,
-            metadata={"audit_cycle_id": str(cycle_id)}
+            metadata={"audit_cycle_id": str(cycle_id)},
         )
 
         # Notify someone? Spec says: Create AUDIT_DISCREPANCY notifications for each flagged item
@@ -172,7 +165,7 @@ def close_cycle(db: Session, cycle_id: uuid.UUID, actor_id: uuid.UUID) -> AuditC
         # In a real system we'd notify the responsible manager. For now, actor_id or specific role.
         notifications_service.create(
             db=db,
-            recipient_id=actor_id, # Or None if it's a system wide alert? Let's notify the closer
+            recipient_id=actor_id,  # Or None if it's a system wide alert? Let's notify the closer
             type=NotificationType.AUDIT_DISCREPANCY,
             message=f"Discrepancy: Asset {asset.name} marked as MISSING in audit {cycle.name}.",
             entity_type="audit_cycle",
@@ -185,7 +178,7 @@ def close_cycle(db: Session, cycle_id: uuid.UUID, actor_id: uuid.UUID) -> AuditC
         .options(joinedload(AuditItem.asset))
         .where(AuditItem.audit_cycle_id == cycle_id, AuditItem.verification == AuditVerification.DAMAGED)
     ).all()
-    
+
     for item in damaged_items:
         notifications_service.create(
             db=db,
@@ -219,21 +212,21 @@ def get_discrepancies(db: Session, cycle_id: uuid.UUID) -> dict:
         .options(joinedload(AuditItem.asset))
         .where(
             AuditItem.audit_cycle_id == cycle_id,
-            AuditItem.verification.in_([AuditVerification.MISSING, AuditVerification.DAMAGED])
+            AuditItem.verification.in_([AuditVerification.MISSING, AuditVerification.DAMAGED]),
         )
     ).all()
 
-    return {
-        "cycle_id": cycle.id,
-        "cycle_name": cycle.name,
-        "discrepancies": items
-    }
+    return {"cycle_id": cycle.id, "cycle_name": cycle.name, "discrepancies": items}
 
 
-def list_cycles(db: Session, limit: int = 50, offset: int = 0) -> List[AuditCycle]:
-    stmt = select(AuditCycle).options(
-        joinedload(AuditCycle.auditors).joinedload(AuditCycleAuditor.user)
-    ).order_by(AuditCycle.created_at.desc()).limit(limit).offset(offset)
+def list_cycles(db: Session, limit: int = 50, offset: int = 0) -> list[AuditCycle]:
+    stmt = (
+        select(AuditCycle)
+        .options(joinedload(AuditCycle.auditors).joinedload(AuditCycleAuditor.user))
+        .order_by(AuditCycle.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
     cycles = db.scalars(stmt).unique().all()
     return [_enrich_cycle(db, c) for c in cycles]
 

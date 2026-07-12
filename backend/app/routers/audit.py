@@ -1,7 +1,6 @@
 """AssetFlow — Audit Router."""
 
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -32,7 +31,7 @@ def create_audit_cycle(
     return audit_service.create_cycle(db, data, current_user.id)
 
 
-@router.get("", response_model=List[AuditCycleOut])
+@router.get("", response_model=list[AuditCycleOut])
 def list_audit_cycles(
     limit: int = 50,
     offset: int = 0,

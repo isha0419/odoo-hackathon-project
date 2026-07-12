@@ -1,7 +1,6 @@
 """AssetFlow — Assets Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -25,14 +24,14 @@ def register_asset(
     return asset_service.register(db, data, current_user.id)
 
 
-@router.get("", response_model=List[AssetOut])
+@router.get("", response_model=list[AssetOut])
 def list_assets(
-    q: Optional[str] = None,
-    category_id: Optional[uuid.UUID] = None,
-    status: Optional[AssetStatus] = None,
-    department_id: Optional[uuid.UUID] = None,
-    location: Optional[str] = None,
-    is_bookable: Optional[bool] = None,
+    q: str | None = None,
+    category_id: uuid.UUID | None = None,
+    status: AssetStatus | None = None,
+    department_id: uuid.UUID | None = None,
+    location: str | None = None,
+    is_bookable: bool | None = None,
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),

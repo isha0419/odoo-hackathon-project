@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -13,28 +13,28 @@ from app.models.enums import AssetCondition, AssetStatus
 class AssetCreate(BaseModel):
     name: str
     category_id: uuid.UUID
-    serial_number: Optional[str] = None
-    acquisition_date: Optional[date] = None
-    acquisition_cost: Optional[Decimal] = None
-    condition: Optional[AssetCondition] = AssetCondition.GOOD
-    location: Optional[str] = None
-    photo_url: Optional[str] = None
+    serial_number: str | None = None
+    acquisition_date: date | None = None
+    acquisition_cost: Decimal | None = None
+    condition: AssetCondition | None = AssetCondition.GOOD
+    location: str | None = None
+    photo_url: str | None = None
     is_bookable: bool = False
     custom_values: dict = Field(default_factory=dict)
 
 
 class AssetUpdate(BaseModel):
-    name: Optional[str] = None
-    category_id: Optional[uuid.UUID] = None
-    serial_number: Optional[str] = None
-    acquisition_date: Optional[date] = None
-    acquisition_cost: Optional[Decimal] = None
-    condition: Optional[AssetCondition] = None
-    location: Optional[str] = None
-    photo_url: Optional[str] = None
-    is_bookable: Optional[bool] = None
-    custom_values: Optional[dict] = None
-    status: Optional[AssetStatus] = None
+    name: str | None = None
+    category_id: uuid.UUID | None = None
+    serial_number: str | None = None
+    acquisition_date: date | None = None
+    acquisition_cost: Decimal | None = None
+    condition: AssetCondition | None = None
+    location: str | None = None
+    photo_url: str | None = None
+    is_bookable: bool | None = None
+    custom_values: dict | None = None
+    status: AssetStatus | None = None
 
 
 class AssetOut(BaseModel):
@@ -44,12 +44,12 @@ class AssetOut(BaseModel):
     asset_tag: str
     name: str
     category_id: uuid.UUID
-    serial_number: Optional[str]
-    acquisition_date: Optional[date]
-    acquisition_cost: Optional[Decimal]
+    serial_number: str | None
+    acquisition_date: date | None
+    acquisition_cost: Decimal | None
     condition: AssetCondition
-    location: Optional[str]
-    photo_url: Optional[str]
+    location: str | None
+    photo_url: str | None
     is_bookable: bool
     custom_values: dict
     status: AssetStatus
@@ -59,5 +59,5 @@ class AssetOut(BaseModel):
 
 class AssetDetail(AssetOut):
     # These will be populated by the service using SQLAlchemy relationship loading
-    allocations: List[Any] = Field(default_factory=list)
-    maintenance_requests: List[Any] = Field(default_factory=list)
+    allocations: list[Any] = Field(default_factory=list)
+    maintenance_requests: list[Any] = Field(default_factory=list)

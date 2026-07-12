@@ -1,7 +1,6 @@
 """AssetFlow — Maintenance Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -25,11 +24,11 @@ def raise_maintenance_request(
     return maintenance_service.raise_request(db, data, current_user.id)
 
 
-@router.get("", response_model=List[MaintenanceOut])
+@router.get("", response_model=list[MaintenanceOut])
 def list_maintenance_requests(
-    asset_id: Optional[uuid.UUID] = None,
-    status: Optional[MaintenanceStatus] = None,
-    priority: Optional[MaintenancePriority] = None,
+    asset_id: uuid.UUID | None = None,
+    status: MaintenanceStatus | None = None,
+    priority: MaintenancePriority | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),

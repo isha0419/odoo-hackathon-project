@@ -3,10 +3,8 @@
 import csv
 import io
 import uuid
-from datetime import date, datetime, timedelta
-from typing import List, Optional
 
-from sqlalchemy import Float, case, cast, func, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.allocation import Allocation
@@ -14,7 +12,7 @@ from app.models.asset import Asset
 from app.models.asset_category import AssetCategory
 from app.models.booking import Booking
 from app.models.department import Department
-from app.models.enums import AllocationStatus, AssetCondition, MaintenanceStatus
+from app.models.enums import AllocationStatus, AssetCondition
 from app.models.maintenance_request import MaintenanceRequest
 from app.schemas.reports import (
     DueReport,
@@ -26,23 +24,19 @@ from app.schemas.reports import (
 )
 
 
-def get_utilization(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[UtilizationReport]:
+def get_utilization(db: Session, dept_id: uuid.UUID | None = None) -> list[UtilizationReport]:
     # Total assets in the company
     total_assets = db.scalar(select(func.count(Asset.id))) or 1
 
     # Allocated assets grouped by department
     stmt = (
-        select(
-            Department.id,
-            Department.name,
-            func.count(Allocation.id).label("allocated_count")
-        )
+        select(Department.id, Department.name, func.count(Allocation.id).label("allocated_count"))
         .select_from(Department)
         .join(Allocation, Allocation.holder_department_id == Department.id)
         .where(Allocation.status == AllocationStatus.ACTIVE)
         .group_by(Department.id)
     )
-    
+
     if dept_id:
         stmt = stmt.where(Department.id == dept_id)
 
@@ -61,15 +55,10 @@ def get_utilization(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[Ut
     return reports
 
 
-def get_most_used(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[MostUsedReport]:
+def get_most_used(db: Session, dept_id: uuid.UUID | None = None) -> list[MostUsedReport]:
     # Simple heuristic: count of allocations per asset
     stmt = (
-        select(
-            Asset.id,
-            Asset.asset_tag,
-            Asset.name,
-            func.count(Allocation.id).label("usage")
-        )
+        select(Asset.id, Asset.asset_tag, Asset.name, func.count(Allocation.id).label("usage"))
         .join(Allocation, Allocation.asset_id == Asset.id)
         .group_by(Asset.id)
         .order_by(func.count(Allocation.id).desc())
@@ -81,23 +70,16 @@ def get_most_used(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[Most
 
     results = db.execute(stmt).all()
     return [
-        MostUsedReport(
-            asset_id=str(row.id),
-            asset_tag=row.asset_tag,
-            name=row.name,
-            usage_count=row.usage
-        )
+        MostUsedReport(asset_id=str(row.id), asset_tag=row.asset_tag, name=row.name, usage_count=row.usage)
         for row in results
     ]
 
 
-def get_idle(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[IdleReport]:
+def get_idle(db: Session, dept_id: uuid.UUID | None = None) -> list[IdleReport]:
     # Assets with no active allocations
     # If dept_id is provided, this report might not make much sense because assets don't belong to a dept unless allocated.
     # We will just return globally idle assets.
-    stmt = select(Asset).where(
-        ~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE)
-    ).limit(20)
+    stmt = select(Asset).where(~Asset.allocations.any(Allocation.status == AllocationStatus.ACTIVE)).limit(20)
 
     results = db.scalars(stmt).all()
     return [
@@ -105,77 +87,51 @@ def get_idle(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[IdleRepor
             asset_id=str(a.id),
             asset_tag=a.asset_tag,
             name=a.name,
-            days_idle=30  # arbitrary placeholder for hackathon
+            days_idle=30,  # arbitrary placeholder for hackathon
         )
         for a in results
     ]
 
 
-def get_maintenance_freq(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[MaintenanceFreqReport]:
+def get_maintenance_freq(db: Session, dept_id: uuid.UUID | None = None) -> list[MaintenanceFreqReport]:
     stmt = (
-        select(
-            AssetCategory.name,
-            func.count(MaintenanceRequest.id).label("req_count")
-        )
+        select(AssetCategory.name, func.count(MaintenanceRequest.id).label("req_count"))
         .select_from(AssetCategory)
         .join(Asset, Asset.category_id == AssetCategory.id)
         .join(MaintenanceRequest, MaintenanceRequest.asset_id == Asset.id)
         .group_by(AssetCategory.id)
     )
     results = db.execute(stmt).all()
-    return [
-        MaintenanceFreqReport(
-            category_name=row.name,
-            request_count=row.req_count
-        )
-        for row in results
-    ]
+    return [MaintenanceFreqReport(category_name=row.name, request_count=row.req_count) for row in results]
 
 
-def get_due(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[DueReport]:
+def get_due(db: Session, dept_id: uuid.UUID | None = None) -> list[DueReport]:
     # Due: condition == POOR or FAIR
-    stmt = select(Asset).where(
-        Asset.condition.in_([AssetCondition.POOR, AssetCondition.FAIR])
-    ).limit(20)
+    stmt = select(Asset).where(Asset.condition.in_([AssetCondition.POOR, AssetCondition.FAIR])).limit(20)
 
     results = db.scalars(stmt).all()
     return [
-        DueReport(
-            asset_id=str(a.id),
-            asset_tag=a.asset_tag,
-            name=a.name,
-            reason=f"Condition is {a.condition.value}"
-        )
+        DueReport(asset_id=str(a.id), asset_tag=a.asset_tag, name=a.name, reason=f"Condition is {a.condition.value}")
         for a in results
     ]
 
 
-def get_booking_heatmap(db: Session, dept_id: Optional[uuid.UUID] = None) -> List[HeatmapBucket]:
+def get_booking_heatmap(db: Session, dept_id: uuid.UUID | None = None) -> list[HeatmapBucket]:
     # Postgres extraction: EXTRACT(DOW FROM lower(time_range))
-    stmt = (
-        select(
-            func.extract('dow', func.lower(Booking.time_range)).label('dow'),
-            func.extract('hour', func.lower(Booking.time_range)).label('hour'),
-            func.count(Booking.id).label('count')
-        )
-        .group_by('dow', 'hour')
-    )
+    stmt = select(
+        func.extract("dow", func.lower(Booking.time_range)).label("dow"),
+        func.extract("hour", func.lower(Booking.time_range)).label("hour"),
+        func.count(Booking.id).label("count"),
+    ).group_by("dow", "hour")
 
     if dept_id:
         stmt = stmt.where(Booking.department_id == dept_id)
 
     results = db.execute(stmt).all()
-    return [
-        HeatmapBucket(
-            day_of_week=int(row.dow),
-            hour_of_day=int(row.hour),
-            count=row.count
-        )
-        for row in results
-    ]
+    return [HeatmapBucket(day_of_week=int(row.dow), hour_of_day=int(row.hour), count=row.count) for row in results]
 
 
-def export_csv(db: Session, report: str, dept_id: Optional[uuid.UUID] = None) -> str:
+def export_csv(db: Session, report: str, dept_id: uuid.UUID | None = None) -> str:
     output = io.StringIO()
     writer = csv.writer(output)
 
@@ -192,5 +148,5 @@ def export_csv(db: Session, report: str, dept_id: Optional[uuid.UUID] = None) ->
     # add other reports as needed for hackathon
     else:
         writer.writerow(["Unsupported Report"])
-        
+
     return output.getvalue()

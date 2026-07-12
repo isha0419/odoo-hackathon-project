@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,8 +17,8 @@ class ActivityLogOut(BaseModel):
     id: uuid.UUID
     actor_user_id: uuid.UUID
     action: str
-    entity_type: Optional[str]
-    entity_id: Optional[uuid.UUID]
+    entity_type: str | None
+    entity_id: uuid.UUID | None
     metadata_: dict
     created_at: datetime
 

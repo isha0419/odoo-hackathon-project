@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import date, datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -11,13 +10,13 @@ from app.models.enums import AllocationStatus
 
 class AllocateRequest(BaseModel):
     asset_id: uuid.UUID
-    holder_user_id: Optional[uuid.UUID] = None
-    holder_department_id: Optional[uuid.UUID] = None
-    expected_return_date: Optional[date] = None
+    holder_user_id: uuid.UUID | None = None
+    holder_department_id: uuid.UUID | None = None
+    expected_return_date: date | None = None
 
 
 class ReturnRequest(BaseModel):
-    return_condition_notes: Optional[str] = None
+    return_condition_notes: str | None = None
 
 
 class UserBase(BaseModel):
@@ -42,16 +41,16 @@ class AllocationOut(BaseModel):
 
     id: uuid.UUID
     asset_id: uuid.UUID
-    holder_user_id: Optional[uuid.UUID]
-    holder_department_id: Optional[uuid.UUID]
+    holder_user_id: uuid.UUID | None
+    holder_department_id: uuid.UUID | None
     allocated_by: uuid.UUID
     allocated_at: datetime
-    expected_return_date: Optional[date]
-    returned_at: Optional[datetime]
-    return_condition_notes: Optional[str]
+    expected_return_date: date | None
+    returned_at: datetime | None
+    return_condition_notes: str | None
     status: AllocationStatus
 
     # Nested representation
     asset: AssetBase
-    holder: Optional[UserBase]
-    holder_department: Optional[DepartmentBase]
+    holder: UserBase | None
+    holder_department: DepartmentBase | None

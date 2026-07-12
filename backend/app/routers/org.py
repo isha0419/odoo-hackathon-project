@@ -10,9 +10,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.deps import get_current_user, require_role
-from app.models.user import User
+from app.deps import require_role
 from app.models.enums import UserRole
+from app.models.user import User
 from app.schemas.org import (
     CategoryCreate,
     CategoryOut,
@@ -32,9 +32,7 @@ router = APIRouter(tags=["organization"])
 
 @router.get("/departments", response_model=list[DepartmentOut])
 def list_departments(
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
     db: Session = Depends(get_db),
 ):
     """List all departments (mgr+ access)."""
@@ -77,9 +75,7 @@ def delete_department(
 
 @router.get("/categories", response_model=list[CategoryOut])
 def list_categories(
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
     db: Session = Depends(get_db),
 ):
     """List all asset categories (mgr+ access)."""
@@ -114,9 +110,7 @@ def update_category(
 def list_employees(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
     db: Session = Depends(get_db),
 ):
     """List employees. Dept Head sees own dept only."""

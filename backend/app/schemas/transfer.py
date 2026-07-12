@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,7 +11,7 @@ from app.models.enums import TransferStatus
 class TransferCreate(BaseModel):
     asset_id: uuid.UUID
     to_user_id: uuid.UUID
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class UserBase(BaseModel):
@@ -35,11 +34,11 @@ class TransferOut(BaseModel):
     from_user_id: uuid.UUID
     to_user_id: uuid.UUID
     requested_by: uuid.UUID
-    reason: Optional[str]
+    reason: str | None
     status: TransferStatus
-    approved_by: Optional[uuid.UUID]
+    approved_by: uuid.UUID | None
     created_at: datetime
-    resolved_at: Optional[datetime]
+    resolved_at: datetime | None
 
     asset: AssetBase
     from_user: UserBase

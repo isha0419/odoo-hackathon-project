@@ -1,7 +1,6 @@
 """AssetFlow — Allocations Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -13,7 +12,7 @@ from app.models.enums import UserRole
 from app.models.user import User
 from app.schemas.allocation import AllocateRequest, AllocationOut, ReturnRequest
 from app.services import allocation_service
-from app.services.allocation_service import AssetAlreadyAllocatedException
+from app.services.allocation_service import AssetAlreadyAllocatedError
 
 router = APIRouter(prefix="/allocations", tags=["Allocations"])
 
@@ -22,13 +21,11 @@ router = APIRouter(prefix="/allocations", tags=["Allocations"])
 def allocate_asset(
     data: AllocateRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
 ):
     try:
         return allocation_service.allocate(db, data, current_user.id)
-    except AssetAlreadyAllocatedException as e:
+    except AssetAlreadyAllocatedError as e:
         return JSONResponse(status_code=409, content=e.conflict_body)
 
 
@@ -37,19 +34,15 @@ def return_asset(
     allocation_id: uuid.UUID,
     data: ReturnRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)
-    ),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.ASSET_MANAGER, UserRole.DEPARTMENT_HEAD)),
 ):
-    return allocation_service.return_asset(
-        db, allocation_id, data.return_condition_notes, current_user.id
-    )
+    return allocation_service.return_asset(db, allocation_id, data.return_condition_notes, current_user.id)
 
 
-@router.get("", response_model=List[AllocationOut])
+@router.get("", response_model=list[AllocationOut])
 def list_allocations(
     overdue: bool = False,
-    holder_user_id: Optional[uuid.UUID] = None,
+    holder_user_id: uuid.UUID | None = None,
     limit: int = 50,
     offset: int = 0,
     db: Session = Depends(get_db),

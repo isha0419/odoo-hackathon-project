@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import HTTPException
 from psycopg2.extras import DateTimeTZRange
@@ -16,7 +15,7 @@ from app.schemas.booking import BookingCreate
 from app.services import activity_service, notifications_service
 
 
-class BookingOverlapException(Exception):
+class BookingOverlapError(Exception):
     def __init__(self, conflict_body: dict):
         self.conflict_body = conflict_body
 
@@ -25,21 +24,21 @@ def create(db: Session, data: BookingCreate, actor_id: uuid.UUID) -> Booking:
     asset = db.scalar(select(Asset).where(Asset.id == data.asset_id))
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
-    
+
     if not asset.is_bookable:
         raise HTTPException(status_code=422, detail="Asset is not bookable")
 
     if data.start >= data.end:
         raise HTTPException(status_code=422, detail="Start time must be before end time")
 
-    requested_range = DateTimeTZRange(data.start, data.end, '[)')
+    requested_range = DateTimeTZRange(data.start, data.end, "[)")
 
     # Pre-check overlap
     overlapping = db.scalar(
         select(Booking).where(
             Booking.asset_id == data.asset_id,
             Booking.status != BookingStatus.CANCELLED,
-            Booking.time_range.op('&&')(requested_range)
+            Booking.time_range.op("&&")(requested_range),
         )
     )
 
@@ -51,16 +50,16 @@ def create(db: Session, data: BookingCreate, actor_id: uuid.UUID) -> Booking:
                 "id": str(overlapping.id),
                 "start": overlapping.time_range.lower.isoformat() if overlapping.time_range.lower else None,
                 "end": overlapping.time_range.upper.isoformat() if overlapping.time_range.upper else None,
-            }
+            },
         }
-        raise BookingOverlapException(conflict_body=conflict_body)
+        raise BookingOverlapError(conflict_body=conflict_body)
 
     booking = Booking(
         asset_id=data.asset_id,
         booked_by_user_id=actor_id,
         department_id=data.department_id,
         time_range=requested_range,
-        status=BookingStatus.UPCOMING
+        status=BookingStatus.UPCOMING,
     )
     db.add(booking)
     db.flush()
@@ -72,7 +71,7 @@ def create(db: Session, data: BookingCreate, actor_id: uuid.UUID) -> Booking:
         entity_type="booking",
         entity_id=booking.id,
     )
-    
+
     notifications_service.create(
         db=db,
         recipient_id=actor_id,
@@ -133,7 +132,7 @@ def reschedule(
 ) -> Booking:
     # 1. Get old booking
     old_booking = get_detail(db, booking_id)
-    
+
     if old_booking.status == BookingStatus.CANCELLED:
         raise HTTPException(status_code=422, detail="Cannot reschedule a cancelled booking")
 
@@ -149,13 +148,13 @@ def reschedule(
         end=new_end,
         department_id=old_booking.department_id,
     )
-    
+
     # We call create() which handles the overlap check and creation.
     # Note: create() also commits. So we must ensure it behaves atomically.
     # Actually, create() does db.commit(). So our cancellation would be committed along with it!
-    # Let's inline the creation logic or modify create to not commit? 
+    # Let's inline the creation logic or modify create to not commit?
     # Calling create() directly is fine since it commits the transaction that we already added old_booking to.
-    
+
     try:
         new_booking = create(db, new_data, actor_id)
         return new_booking
@@ -167,20 +166,20 @@ def reschedule(
 
 def list_bookings(
     db: Session,
-    asset_id: Optional[uuid.UUID] = None,
-    date_val: Optional[datetime] = None,  # Can be used to filter a specific day
+    asset_id: uuid.UUID | None = None,
+    date_val: datetime | None = None,  # Can be used to filter a specific day
     limit: int = 50,
-    offset: int = 0
-) -> List[Booking]:
+    offset: int = 0,
+) -> list[Booking]:
     stmt = select(Booking).options(
         joinedload(Booking.asset),
         joinedload(Booking.booked_by),
     )
-    
+
     if asset_id:
         stmt = stmt.where(Booking.asset_id == asset_id)
-        
+
     # Example logic for date filter if needed, could use time_range boundaries
-    
+
     stmt = stmt.order_by(Booking.created_at.desc()).limit(limit).offset(offset)
     return db.scalars(stmt).all()

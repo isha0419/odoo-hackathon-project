@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,12 +12,12 @@ class MaintenanceCreate(BaseModel):
     asset_id: uuid.UUID
     issue_description: str
     priority: MaintenancePriority = MaintenancePriority.MEDIUM
-    photo_url: Optional[str] = None
+    photo_url: str | None = None
 
 
 class MaintenanceTransition(BaseModel):
     to_status: MaintenanceStatus
-    technician_name: Optional[str] = None
+    technician_name: str | None = None
 
 
 class UserBase(BaseModel):
@@ -40,12 +39,12 @@ class MaintenanceOut(BaseModel):
     raised_by: uuid.UUID
     issue_description: str
     priority: MaintenancePriority
-    photo_url: Optional[str]
+    photo_url: str | None
     status: MaintenanceStatus
-    approved_by: Optional[uuid.UUID]
-    technician_name: Optional[str]
+    approved_by: uuid.UUID | None
+    technician_name: str | None
     created_at: datetime
-    resolved_at: Optional[datetime]
+    resolved_at: datetime | None
 
     asset: AssetBase
     raiser: UserBase

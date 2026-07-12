@@ -1,7 +1,6 @@
 """AssetFlow — Notifications Router."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -17,7 +16,7 @@ from app.services import notifications_service
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
-@router.get("", response_model=List[NotificationOut])
+@router.get("", response_model=list[NotificationOut])
 def list_notifications(
     limit: int = 50,
     offset: int = 0,
@@ -25,7 +24,7 @@ def list_notifications(
     current_user: User = Depends(get_current_user),
 ):
     notifications_service.sync_derived(db)
-    
+
     stmt = (
         select(Notification)
         .where(Notification.recipient_user_id == current_user.id)
@@ -44,13 +43,12 @@ def mark_read(
 ):
     notif = db.scalar(
         select(Notification).where(
-            Notification.id == notification_id,
-            Notification.recipient_user_id == current_user.id
+            Notification.id == notification_id, Notification.recipient_user_id == current_user.id
         )
     )
     if not notif:
         raise HTTPException(status_code=404, detail="Notification not found")
-        
+
     notif.is_read = True
     db.add(notif)
     db.commit()

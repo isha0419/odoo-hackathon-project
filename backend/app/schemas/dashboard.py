@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import date, datetime
-from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,8 +12,8 @@ class ActivityLogBase(BaseModel):
     id: uuid.UUID
     actor_user_id: uuid.UUID
     action: str
-    entity_type: Optional[str]
-    entity_id: Optional[uuid.UUID]
+    entity_type: str | None
+    entity_id: uuid.UUID | None
     created_at: datetime
     metadata_: dict
 
@@ -24,7 +23,7 @@ class AllocationBasic(BaseModel):
 
     id: uuid.UUID
     asset_id: uuid.UUID
-    expected_return_date: Optional[date]
+    expected_return_date: date | None
 
 
 class DashboardKPIs(BaseModel):
@@ -33,6 +32,6 @@ class DashboardKPIs(BaseModel):
     maintenance_today: int
     active_bookings: int
     pending_transfers: int
-    upcoming_returns: List[AllocationBasic]
-    overdue_returns: List[AllocationBasic]
-    recent_activity: List[ActivityLogBase]
+    upcoming_returns: list[AllocationBasic]
+    overdue_returns: list[AllocationBasic]
+    recent_activity: list[ActivityLogBase]

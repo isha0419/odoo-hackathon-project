@@ -10,8 +10,8 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models.user import User
 from app.models.enums import ActiveStatus, UserRole
+from app.models.user import User
 from app.schemas.auth import SignupRequest, TokenResponse, UserOut
 from app.security import create_access_token, hash_password, verify_password
 

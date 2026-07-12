@@ -8,7 +8,7 @@ only, one per module, alphabetized, so merges are trivial.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import app.models  # noqa: F401 — ensure all models loaded for Alembic/metadata
+import app.models
 
 
 def create_app() -> FastAPI:

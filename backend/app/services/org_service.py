@@ -9,10 +9,10 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models.department import Department
 from app.models.asset_category import AssetCategory
-from app.models.user import User
+from app.models.department import Department
 from app.models.enums import ActiveStatus, UserRole
+from app.models.user import User
 from app.schemas.org import (
     CategoryCreate,
     CategoryOut,
@@ -25,10 +25,10 @@ from app.schemas.org import (
 )
 from app.services import activity_service
 
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # DEPARTMENTS
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def list_departments(db: Session) -> list[DepartmentOut]:
     """List all departments with head and parent names."""
@@ -111,6 +111,7 @@ def _dept_to_out(dept: Department) -> DepartmentOut:
 # CATEGORIES
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 def list_categories(db: Session) -> list[CategoryOut]:
     """List all asset categories."""
     cats = db.query(AssetCategory).order_by(AssetCategory.name).all()
@@ -152,6 +153,7 @@ def update_category(db: Session, cat_id: uuid.UUID, data: CategoryUpdate) -> Cat
 # ═══════════════════════════════════════════════════════════════════════════════
 # EMPLOYEES
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def list_employees(
     db: Session,

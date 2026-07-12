@@ -1,7 +1,6 @@
 """AssetFlow — Asset Service (Track B)."""
 
 import uuid
-from typing import List, Optional
 
 from fastapi import HTTPException
 from sqlalchemy import func, or_, select
@@ -50,22 +49,21 @@ def register(db: Session, data: AssetCreate, actor_id: uuid.UUID) -> Asset:
 
 def list_assets(
     db: Session,
-    q: Optional[str] = None,
-    category_id: Optional[uuid.UUID] = None,
-    status: Optional[AssetStatus] = None,
-    department_id: Optional[uuid.UUID] = None,
-    location: Optional[str] = None,
-    is_bookable: Optional[bool] = None,
+    q: str | None = None,
+    category_id: uuid.UUID | None = None,
+    status: AssetStatus | None = None,
+    department_id: uuid.UUID | None = None,
+    location: str | None = None,
+    is_bookable: bool | None = None,
     limit: int = 50,
     offset: int = 0,
-) -> List[Asset]:
+) -> list[Asset]:
     stmt = select(Asset)
 
     if department_id:
         stmt = stmt.join(
             Allocation,
-            (Allocation.asset_id == Asset.id)
-            & (Allocation.status == AllocationStatus.ACTIVE),
+            (Allocation.asset_id == Asset.id) & (Allocation.status == AllocationStatus.ACTIVE),
         ).where(Allocation.holder_department_id == department_id)
 
     if q:
@@ -105,9 +103,7 @@ def get_detail(db: Session, asset_id: uuid.UUID) -> Asset:
     return db_asset
 
 
-def update(
-    db: Session, asset_id: uuid.UUID, data: AssetUpdate, actor_id: uuid.UUID
-) -> Asset:
+def update(db: Session, asset_id: uuid.UUID, data: AssetUpdate, actor_id: uuid.UUID) -> Asset:
     db_asset = get_detail(db, asset_id)
 
     update_data = data.model_dump(exclude_unset=True)
@@ -118,11 +114,11 @@ def update(
         old_status = db_asset.status
         new_status = update_data["status"]
 
-        if old_status == AssetStatus.AVAILABLE and new_status == AssetStatus.RETIRED:
+        if (old_status == AssetStatus.AVAILABLE and new_status == AssetStatus.RETIRED) or (
+            old_status == AssetStatus.RETIRED and new_status == AssetStatus.DISPOSED
+        ):
             allowed = True
-        elif old_status == AssetStatus.RETIRED and new_status == AssetStatus.DISPOSED:
-            allowed = True
-        
+
         if not allowed:
             raise HTTPException(
                 status_code=422,

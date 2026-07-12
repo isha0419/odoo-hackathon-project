@@ -11,9 +11,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import app.models  # noqa: F401 — load all models so metadata has tables
 from app.config import settings
 from app.db import Base
-import app.models  # noqa: F401 — load all models so metadata has tables
 
 config = context.config
 
