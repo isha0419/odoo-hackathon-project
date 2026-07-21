@@ -179,27 +179,22 @@ Here are the results of the complete workflow:
 ### 1. Authentication & Dashboard
 The system successfully logs in Admin users (`admin@assetflow.io`) and displays the dashboard. The dashboard successfully aggregates all backend metrics (Available, Allocated, Under Maintenance, etc.) and lists recent activity.
 
-![Dashboard](docs/images/dashboard_loads.png)
 
 ### 2. Asset Registry & Filtering
 The Assets page displays all seeded assets. The search filter correctly narrows the table down to just "Laptop" devices, proving the backend API search logic works seamlessly with the UI.
 
-![Assets Filtered](docs/images/assets_page_and_search.png)
 
 ### 3. Allocations
 The Allocations page successfully loads, allowing users to search for specific asset tags (e.g. `AF-0114`) and see active holders, expected return dates, and historical transfer requests.
 
-![Allocations](docs/images/allocations_page.png)
 
 ### 4. Resource Bookings (Crown Jewel)
 The Resource Booking calendar successfully loads, visually mapping out upcoming reservations and preventing overlapping timeslots in the frontend scheduler via backend ExcludeConstraints.
 
-![Bookings Calendar](docs/images/bookings_page.png)
 
 ### 5. Maintenance Kanban Board
 The Maintenance page features a fully functional Kanban board. Requests are cleanly organized into their respective statuses (Pending, Approved, In Progress, Resolved).
 
-![Maintenance Kanban](docs/images/maintenance_page.png)
 
 ---
 
