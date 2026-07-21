@@ -255,7 +255,8 @@ sequenceDiagram
         R-->>U: 409 (friendly conflict body)
     else asset free
         DB-->>S: none
-        S->>DB: INSERT allocation (ACTIVE); UPDATE asset.status = ALLOCATED
+        S->>DB: INSERT allocation (ACTIVE)
+        S->>DB: UPDATE asset.status = ALLOCATED
         S->>DB: INSERT activity_logs("asset.allocated")
         S->>DB: INSERT notifications(ASSET_ASSIGNED)
         DB-->>S: commit
@@ -421,7 +422,7 @@ sequenceDiagram
     Sec-->>Auth: access_token
     Auth-->>U: {access_token, token_type, user}
 
-    U->>Dep: any /api/* request, Authorization: ******
+    U->>Dep: any /api/* request with bearer token
     Dep->>Dep: decode JWT, load user, check status == ACTIVE
     Dep-->>U: 401 if invalid/expired/inactive
     Dep->>Dep: require_role(*roles) — 403 if role not in allowed set
@@ -501,8 +502,6 @@ flowchart TD
     Mark --> Close["POST /audit-cycles/{id}/close (Admin)<br/>cycle.status = CLOSED"]
     Close --> Discrepancy["Auto-generate discrepancy report:<br/>every MISSING item → asset.status = LOST<br/>AUDIT_DISCREPANCY notification per discrepancy"]
 ```
-
-### 7. Notifications & activity log
 
 ### 8. Deployment architecture
 
